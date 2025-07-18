@@ -2,6 +2,8 @@ from abc import ABC
 
 
 class BaseVacancy(ABC):
+    """ Абстрактный класс определяющий обязательные поля для
+    наследников вакансий различных типов """
 
     name: str
     salary: int

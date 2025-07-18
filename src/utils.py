@@ -1,12 +1,14 @@
-def get_all_subclasses(cls):
-    """Рекурсивно получает всех наследников класса"""
+def get_all_subclasses(cls: type) -> set:
+    """ Рекурсивно получает всех наследников класса """
 
     return set(cls.__subclasses__()).union(
         [s for c in cls.__subclasses__() for s in get_all_subclasses(c)]
     )
 
 
-def create_instances_of_subclasses(parent_class):
+def create_instances_of_subclasses(parent_class: type) -> list:
+    """ Получает списко объектов всех классов наследников """
+
     instances = []
     for subclass in get_all_subclasses(parent_class):
         try:
