@@ -5,6 +5,7 @@ class BaseVacancy(ABC):
 
     name: str
     salary: int
+    employer: str
 
-    def __init__(self, name: str, salary: int):
+    def __init__(self, name: str, salary: int, employer: str) -> None:
         pass
