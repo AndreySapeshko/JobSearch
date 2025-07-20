@@ -20,7 +20,7 @@ class HhApiRequestHandler(ApiRequestHandler):
             "text": self.name_vacancy,
             "area": 1,
             "page": page,
-            "per_page": 1
+            "per_page": 10
         }
         async with session.get(url, params=params) as response:
             response.raise_for_status()
