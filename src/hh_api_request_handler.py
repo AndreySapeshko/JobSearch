@@ -7,6 +7,7 @@ from src.api_request_handler import ApiRequestHandler
 
 
 class HhApiRequestHandler(ApiRequestHandler):
+    """ Класс объект которого получает по API данные по вакансиям с сайта hh.ru """
 
     name_vacancy: str
 

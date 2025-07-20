@@ -2,6 +2,7 @@ from src.api_request_handler import ApiRequestHandler
 
 
 class VacanciesHandler:
+    """ Класс объект которого обрабатывает все вакансии полученные с различных сайтов """
 
     vacancies: list[dict]
     num_top_vacancies: int
