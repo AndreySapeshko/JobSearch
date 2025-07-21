@@ -6,14 +6,22 @@ from src.hh_api_request_handler import HhApiRequestHandler
 from config import PATH_HH_VACANCIES_JSON
 
 
+
+
+
 async def main():
+    semaphore = asyncio.Semaphore(3)
     hh_request = HhApiRequestHandler('Python')
     async with aiohttp.ClientSession() as session:
-        tasks = [hh_request.get_api_request(session, page) for page in range(1)]
+        tasks = [
+            hh_request.fetch_page(semaphore, session, hh_request, page)
+            for page in range(20)
+        ]
         results = await asyncio.gather(*tasks)
-        for vacancies in results:
-            with open(PATH_HH_VACANCIES_JSON, 'w', encoding='utf-8') as file:
-                json.dump(vacancies, file, ensure_ascii=False, indent=4)
+        successful_results = [page for page in results if page]
+        for result in successful_results:
+            print(type(result))
+
 
 
 if __name__ == '__main__':

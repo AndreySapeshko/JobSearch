@@ -35,7 +35,7 @@ class HhReaderVacancies(ReaderVacancies):
                 requirement = vacancy.get('snippet').get('requirement')
                 description = vacancy.get('snippet').get('responsibility')
                 vacancies.append(Vacancy(name, salary, employer, requirement, description))
-        return sorted(vacancies, key=lambda x: x.salary)
+        return sorted(vacancies, key=lambda x: x.salary, reverse=True)
 
 
 hh_reader = HhReaderVacancies(PATH_HH_VACANCIES_JSON)
