@@ -1,13 +1,15 @@
 import json
 import os
 
+from pathlib import Path
+
 from src.file_handler import FileHandler
 from config import PATH_TEST_VACANCIES_JSON
 
 
 class JsonFileHandler(FileHandler):
 
-    def __init__(self, file_name) -> None:
+    def __init__(self, file_name: Path) -> None:
         self.file_name = file_name
 
     def read_from_file(self) -> dict:
