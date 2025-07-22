@@ -20,6 +20,9 @@ class HhReaderVacancies(ReaderVacancies):
 
 
     def create_vacancy_from_hh(self, hh_vacancy: dict) -> Vacancy:
+        """ Метод принимает вакансию с сайта hh.ru из нее создает
+        объект класса Vacancy и возвращает его """
+
         name = hh_vacancy.get('name')
         salary = 0
         if hh_vacancy.get('salary'):
@@ -32,7 +35,8 @@ class HhReaderVacancies(ReaderVacancies):
         employer = hh_vacancy.get('employer').get('name')
         requirement = hh_vacancy.get('snippet').get('requirement')
         description = hh_vacancy.get('snippet').get('responsibility')
-        return Vacancy(name, salary, employer, requirement, description)
+        url = hh_vacancy.get('alternate_url')
+        return Vacancy(name, salary, employer, requirement, description, url)
 
 
     def get_vacancies(self) -> list[BaseVacancy]:
