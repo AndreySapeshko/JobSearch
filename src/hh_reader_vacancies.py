@@ -18,27 +18,36 @@ class HhReaderVacancies(ReaderVacancies):
         self.pages = pages
         self.count_top = count_top
 
+
+    def create_vacancy_from_hh(self, hh_vacancy: dict) -> Vacancy:
+        name = hh_vacancy.get('name')
+        salary = 0
+        if hh_vacancy.get('salary'):
+            if hh_vacancy.get('salary').get('from'):
+                salary = hh_vacancy.get('salary').get('from')
+            if hh_vacancy.get('salary').get('to'):
+                salary = hh_vacancy.get('salary').get('to')
+            if hh_vacancy.get('salary').get('from') and hh_vacancy.get('salary').get('to'):
+                salary = (hh_vacancy.get('salary').get('from') + hh_vacancy.get('salary').get('to')) / 2
+        employer = hh_vacancy.get('employer').get('name')
+        requirement = hh_vacancy.get('snippet').get('requirement')
+        description = hh_vacancy.get('snippet').get('responsibility')
+        return Vacancy(name, salary, employer, requirement, description)
+
+
     def get_vacancies(self) -> list[BaseVacancy]:
+        """ Из json файлов полученных с hh.ru с вакансиями создает список с
+        объектами класса Vacancy, сортирует по убыванию зарплаты и возвращает
+        список с запрошенным количеством топ вакансий """
+
         vacancies = []
         for page in range(self.pages):
             file_name = Path(__file__).parent.parent / 'data' / f'hh_vacancies_page_{page}.json'
             if Path.exists(file_name):
                 json_file_handler = JsonFileHandler(file_name)
                 hh_vacancies = json_file_handler.read_from_file().get('items')
-                for vacancy in hh_vacancies:
-                    if not vacancy['archived']:
-                        name = vacancy.get('name')
-                        salary = 0
-                        if vacancy.get('salary'):
-                            if vacancy.get('salary').get('from'):
-                                salary = vacancy.get('salary').get('from')
-                            if vacancy.get('salary').get('to'):
-                                salary = vacancy.get('salary').get('to')
-                            if vacancy.get('salary').get('from') and vacancy.get('salary').get('to'):
-                                salary = (vacancy.get('salary').get('from') + vacancy.get('salary').get('to')) / 2
-                        employer = vacancy.get('employer').get('name')
-                        requirement = vacancy.get('snippet').get('requirement')
-                        description = vacancy.get('snippet').get('responsibility')
-                        vacancies.append(Vacancy(name, salary, employer, requirement, description))
+                for hh_vacancy in hh_vacancies:
+                    if hh_vacancy and not hh_vacancy['archived']:
+                        vacancies.append(self.create_vacancy_from_hh(hh_vacancy))
 
         return sorted(vacancies, key=lambda x: x.salary, reverse=True)[:self.count_top]

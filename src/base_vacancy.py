@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class BaseVacancy(ABC):
@@ -9,5 +9,6 @@ class BaseVacancy(ABC):
     salary: int
     employer: str
 
+    @abstractmethod
     def __init__(self, name: str, salary: int, employer: str) -> None:
         pass
