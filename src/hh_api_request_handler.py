@@ -16,15 +16,15 @@ from src.api_request_handler import ApiRequestHandler
 class HhApiRequestHandler(ApiRequestHandler):
     """ Класс объект которого получает по API данные по вакансиям с сайта hh.ru """
 
-    name_vacancy: str
+    __name_vacancy: str
 
     def __init__(self, name_vacancy: str) -> None:
-        self.name_vacancy = name_vacancy
+        self.__name_vacancy = name_vacancy
 
     async def get_api_request(self, session: ClientSession, page: int = 0) -> Dict[str: Any]:
         url = "https://api.hh.ru/vacancies"
         params = {
-            "text": self.name_vacancy,
+            "text": self.__name_vacancy,
             "area": 1,
             "page": page,
             "per_page": 100
