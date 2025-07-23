@@ -20,3 +20,18 @@ class Vacancy(BaseVacancy):
 
     def __str__(self) -> str:
         return f'Vacancy({self.name}, {self.salary}, {self.employer})'
+
+    def __lt__(self, other: BaseVacancy) -> bool:
+        return self.salary < other.salary
+
+    def __le__(self, other: BaseVacancy) -> bool:
+        return self.salary <= other.salary
+
+    def __gt__(self, other: BaseVacancy) -> bool:
+        return self.salary > other.salary
+
+    def __ge__(self, other: BaseVacancy) -> bool:
+        return self.salary >= other.salary
+
+    def __eq__(self, other: BaseVacancy) -> bool:
+        return self.salary == other.salary
