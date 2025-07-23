@@ -14,8 +14,9 @@ class VacanciesHandler:
         self.num_top_vacancies = num_top_vacancies
         self.key_words = key_words
 
-    def sorted_vacancy(self, reverse=False) -> list:
+    def sort_vacancy(self, reverse=False) -> list:
         return sorted(self.vacancies, reverse=reverse)
 
     def get_top_vacancies(self) -> list:
-        pass
+        sorted_vacancies = self.sort_vacancy(reverse=True)
+        return sorted_vacancies[:self.num_top_vacancies]
