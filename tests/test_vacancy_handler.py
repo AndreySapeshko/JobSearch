@@ -1,3 +1,5 @@
+import pytest
+
 from src.vacancies_handler import VacanciesHandler
 from src.hh_reader_vacancies import HhReaderVacancies
 
@@ -19,3 +21,27 @@ def test_vacancy_handler_top() -> None:
     assert len(vacancies) == 10
     assert vacancies[0] >= vacancies[1]
     assert vacancies[0] > vacancies[-1]
+
+
+def test_vacancy_handler_filter_without_key() -> None:
+    filtered_vacancies = handler.filter_vacancies()
+    assert len(filtered_vacancies) == 100
+
+
+@pytest.mark.parametrize('key_words', [(['Backend'])])
+def test_vacancy_handler_filter(key_words: list) -> None:
+    hh_reader = HhReaderVacancies(5)
+    vacancies = hh_reader.get_vacancies()
+    handler = VacanciesHandler(vacancies, 10, key_words)
+    filtered_vacancies = handler.filter_vacancies()
+    for vacancy in filtered_vacancies:
+        is_in_vacancy = False
+        for word in key_words:
+            if vacancy.name and word in vacancy.name:
+                is_in_vacancy = True
+                break
+            if vacancy.requirement and word in vacancy.requirement:
+                is_in_vacancy = True
+                break
+        assert is_in_vacancy == True
+
