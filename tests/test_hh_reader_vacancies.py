@@ -33,3 +33,54 @@ def test_hh_reader_vacancies(pages: int) -> None:
     assert len(result) == 2000
     for vacancy in result:
         assert isinstance(vacancy, BaseVacancy)
+
+
+def test_get_valid_name(hh_vacancy) -> None:
+    hh_reader = HhReaderVacancies(1)
+    assert hh_reader._HhReaderVacancies__get_valid_name(hh_vacancy) == 'Python developer'
+    hh_vacancy['name'] = None
+    assert hh_reader._HhReaderVacancies__get_valid_name(hh_vacancy) == 'Название вакансии не указано'
+
+
+def test_get_valid_salary(hh_vacancy) -> None:
+    hh_reader = HhReaderVacancies(1)
+    assert hh_reader._HhReaderVacancies__get_valid_salary(hh_vacancy) == 130000
+    hh_vacancy['salary'] = None
+    assert hh_reader._HhReaderVacancies__get_valid_salary(hh_vacancy) == 0
+
+
+def test_get_valid_salary_range(hh_vacancy) -> None:
+    hh_reader = HhReaderVacancies(1)
+    assert hh_reader._HhReaderVacancies__get_valid_salary_range(hh_vacancy) == 'от 100000 до 160000'
+    hh_vacancy['salary'] = None
+    assert hh_reader._HhReaderVacancies__get_valid_salary_range(hh_vacancy) == 'Не указано'
+
+
+def test_get_valid_employer(hh_vacancy) -> None:
+    hh_reader = HhReaderVacancies(1)
+    assert hh_reader._HhReaderVacancies__get_valid_employer(hh_vacancy) == 'employer'
+    hh_vacancy['employer'] = None
+    assert hh_reader._HhReaderVacancies__get_valid_employer(hh_vacancy) == 'Работодатель не указан'
+
+
+def test_get_valid_requirement(hh_vacancy) -> None:
+    hh_reader = HhReaderVacancies(1)
+    assert (hh_reader._HhReaderVacancies__get_valid_requirement(hh_vacancy) ==
+            'Крепкие знания <highlighttext>Python</highlighttext>. Опыт работы с FastAPI.')
+    hh_vacancy['snippet'] = None
+    assert hh_reader._HhReaderVacancies__get_valid_requirement(hh_vacancy) == 'Требования не указаны'
+
+
+def test_get_valid_description(hh_vacancy) -> None:
+    hh_reader = HhReaderVacancies(1)
+    assert (hh_reader._HhReaderVacancies__get_valid_description(hh_vacancy) ==
+            'Разработка программных продуктов в соответствии с требованиями проекта.')
+    hh_vacancy['snippet'] = None
+    assert hh_reader._HhReaderVacancies__get_valid_description(hh_vacancy) == 'Описание не указано'
+
+
+def test_get_valid_url(hh_vacancy) -> None:
+    hh_reader = HhReaderVacancies(1)
+    assert hh_reader._HhReaderVacancies__get_valid_url(hh_vacancy) == 'https://hh.ru/vacancy/122884182'
+    hh_vacancy['alternate_url'] = None
+    assert hh_reader._HhReaderVacancies__get_valid_url(hh_vacancy) == 'Сылака на вакансию не указана'

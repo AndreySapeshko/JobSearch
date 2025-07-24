@@ -14,7 +14,7 @@ class VacanciesHandler:
         self.num_top_vacancies = num_top_vacancies
         self.key_words = key_words
 
-    def filter_vacancies(self) -> None:
+    def filter_vacancies(self) -> list:
         """ Фильтрует вакансии по ключевым слова, проверяет их вхождение в name и requirement.
          Если список ключевых слов пустой вернет не филтьрованный список. """
 
@@ -22,14 +22,17 @@ class VacanciesHandler:
         if len(self.key_words) == 0:
             return self.vacancies
         for vacancy in self.vacancies:
+            is_in_vacancy = True
             for word in self.key_words:
-                if vacancy.requirement and word in vacancy.requirement:
-                    filtered_vacancies.append(vacancy)
+                requirement: str = vacancy.requirement
+                name = vacancy.name
+                if word.lower() not in name.lower() and word.lower() not in requirement.lower():
+                    is_in_vacancy = False
                     break
-                if vacancy.name and word in vacancy.name:
-                    filtered_vacancies.append(vacancy)
-                    break
-        return filtered_vacancies
+            if is_in_vacancy:
+                filtered_vacancies.append(vacancy)
+        self.vacancies = filtered_vacancies
+        return self.vacancies
 
     def sort_vacancy(self, reverse=False) -> list:
         """ Сортерует список вакансий по полю salary. По умолчанию по возростанию,
@@ -42,3 +45,4 @@ class VacanciesHandler:
 
         sorted_vacancies = self.sort_vacancy(reverse=True)
         return sorted_vacancies[:self.num_top_vacancies]
+'strE'.lower()

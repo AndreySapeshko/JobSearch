@@ -8,7 +8,8 @@ class BaseVacancy(ABC):
     name: str
     salary: int
     employer: str
+    requirement: str
 
     @abstractmethod
-    def __init__(self, name: str, salary: int, employer: str) -> None:
+    def __init__(self, name: str, salary: int, employer: str, requirement: str) -> None:
         pass
