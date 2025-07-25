@@ -9,6 +9,8 @@ from src.vacancy import Vacancy
 
 
 class JsonFileHandler(FileHandler):
+    """ Класс объект которого обрабатывает файлы формата json.
+     Записывает данные в файл, читает из файла и удаляет данные. """
 
     def __init__(self) -> None:
         pass
@@ -35,6 +37,9 @@ class JsonFileHandler(FileHandler):
         return json_data
 
     def vacancies_for_json(self, vacancies: list[BaseVacancy]) -> list[dict]:
+        """ Принимает список объектов класса BaseVacancy, возвращает список словорей
+         с именами и значениями параметров вакансии для сохранения в файл в формате json """
+
         to_json_vacancies = []
         for vacancy in vacancies:
             vacancy_dict = {}
@@ -47,9 +52,11 @@ class JsonFileHandler(FileHandler):
         return to_json_vacancies
 
     def write_in_file(self, vacancies: list) -> None:
+        """ Записывает данные в файл в формате json """
+
         vacancies_to_json = self.vacancies_for_json(vacancies)
         file_name = Path(__file__).parent.parent / 'data' / f'top_vacancies.json'
-        with open(file_name, 'w', encoding='utf-8') as file:
+        with open(file_name, 'a', encoding='utf-8') as file:
             try:
                 json.dump(vacancies_to_json, file, ensure_ascii=False, indent=4)
             except Exception as e:

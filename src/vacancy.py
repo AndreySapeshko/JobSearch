@@ -2,6 +2,10 @@ from src.base_vacancy import BaseVacancy
 
 
 class Vacancy(BaseVacancy):
+    """ Класс наследник BaseVacancy описывает вакансию с полями: наименование,
+    зарплата (среднее значение), диапазон зарплаты, работодатель, описание, требования и ссылка.
+    В классе реализованы магические методы сравнения по полю зарплата (среднее значение). """
+
     salary_range: str
     description: str
     requirement: str

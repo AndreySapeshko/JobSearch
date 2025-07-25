@@ -18,12 +18,16 @@ class HhReaderVacancies(ReaderVacancies):
         self.pages = pages
 
     def __get_valid_name(self, hh_vacancy: dict) -> str:
+        """ Проверяет параметр name для создания объекта класса Vacancy """
+
         if hh_vacancy.get('name'):
             return hh_vacancy.get('name')
         else:
             return 'Название вакансии не указано'
 
     def __get_valid_salary(self, hh_vacancy: dict) -> int:
+        """ Проверяет параметр salary для создания объекта класса Vacancy """
+
         salary = 0
         if hh_vacancy.get('salary'):
             salary_from = hh_vacancy.get('salary').get('from')
@@ -37,6 +41,8 @@ class HhReaderVacancies(ReaderVacancies):
         return salary
 
     def __get_valid_salary_range(self, hh_vacancy: dict) -> str:
+        """ Проверяет параметр salary_range для создания объекта класса Vacancy """
+
         salary_range = 'Не указано'
         if hh_vacancy.get('salary'):
             salary_from = hh_vacancy.get('salary').get('from')
@@ -50,24 +56,32 @@ class HhReaderVacancies(ReaderVacancies):
         return salary_range
 
     def __get_valid_employer(self, hh_vacancy: dict) -> str:
+        """ Проверяет параметр employer для создания объекта класса Vacancy """
+
         if hh_vacancy.get('employer') and hh_vacancy.get('employer').get('name'):
             return hh_vacancy.get('employer').get('name')
         else:
             return 'Работодатель не указан'
 
     def __get_valid_requirement(self, hh_vacancy: dict) -> str:
+        """ Проверяет параметр requirement для создания объекта класса Vacancy """
+
         if hh_vacancy.get('snippet') and hh_vacancy.get('snippet').get('requirement'):
             return hh_vacancy.get('snippet').get('requirement')
         else:
             return 'Требования не указаны'
 
     def __get_valid_description(self, hh_vacancy: dict) -> str:
+        """ Проверяет параметр description для создания объекта класса Vacancy """
+
         if hh_vacancy.get('snippet') and hh_vacancy.get('snippet').get('responsibility'):
             return hh_vacancy.get('snippet').get('responsibility')
         else:
             return 'Описание не указано'
 
     def __get_valid_url(self, hh_vacancy: dict) -> str:
+        """ Проверяет параметр url для создания объекта класса Vacancy """
+
         if hh_vacancy.get('alternate_url'):
             return hh_vacancy.get('alternate_url')
         else:
