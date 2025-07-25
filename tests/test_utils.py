@@ -1,7 +1,7 @@
 from abc import ABC
 from pytest import CaptureFixture
 
-from src.utils import get_all_subclasses, create_instances_of_subclasses
+from src.utils import create_instances_of_subclasses, get_all_subclasses
 
 
 class Animal(ABC):

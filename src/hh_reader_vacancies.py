@@ -1,13 +1,9 @@
-import json
-import logging
-import os
 from pathlib import Path
 
 from src.base_vacancy import BaseVacancy
-from src.reader_vacancies import ReaderVacancies
 from src.json_file_handler import JsonFileHandler
+from src.reader_vacancies import ReaderVacancies
 from src.vacancy import Vacancy
-from config import PATH_HH_VACANCIES_JSON
 
 
 class HhReaderVacancies(ReaderVacancies):
@@ -100,7 +96,6 @@ class HhReaderVacancies(ReaderVacancies):
         url = self.__get_valid_url(hh_vacancy)
         return Vacancy(name, salary, salary_range, employer, requirement, description, url)
 
-
     def get_vacancies(self) -> list[BaseVacancy]:
         """ Из json файлов полученных с hh.ru с вакансиями создает список с
         объектами класса Vacancy, сортирует по убыванию зарплаты и возвращает
@@ -112,8 +107,9 @@ class HhReaderVacancies(ReaderVacancies):
             file_name = Path(__file__).parent.parent / 'data' / f'hh_vacancies_page_{page}.json'
             if Path.exists(file_name):
                 hh_vacancies = json_file_handler.read_from_file(file_name).get('items')
-                for hh_vacancy in hh_vacancies:
-                    if hh_vacancy and not hh_vacancy['archived']:
-                        vacancies.append(self.create_vacancy_from_hh(hh_vacancy))
+                if hh_vacancies:
+                    for hh_vacancy in hh_vacancies:
+                        if hh_vacancy and not hh_vacancy['archived']:
+                            vacancies.append(self.create_vacancy_from_hh(hh_vacancy))
 
         return vacancies

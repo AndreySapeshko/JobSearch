@@ -13,7 +13,7 @@ class FileHandler(ABC):
         pass
 
     @abstractmethod
-    def write_in_file(self, vacancies: BaseVacancy) -> None:
+    def write_in_file(self, vacancies: list[BaseVacancy]) -> None:
         pass
 
     @abstractmethod

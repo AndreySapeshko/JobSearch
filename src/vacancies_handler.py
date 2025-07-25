@@ -1,4 +1,3 @@
-from src.api_request_handler import ApiRequestHandler
 from src.base_vacancy import BaseVacancy
 
 
@@ -18,7 +17,7 @@ class VacanciesHandler:
         """ Фильтрует вакансии по ключевым слова, проверяет их вхождение в name и requirement.
          Если список ключевых слов пустой вернет не филтьрованный список. """
 
-        filtered_vacancies =[]
+        filtered_vacancies = []
         if len(self.key_words) == 0:
             return self.vacancies
         for vacancy in self.vacancies:
@@ -34,7 +33,7 @@ class VacanciesHandler:
         self.vacancies = filtered_vacancies
         return self.vacancies
 
-    def sort_vacancy(self, reverse=False) -> list:
+    def sort_vacancy(self, reverse: bool = False) -> list:
         """ Сортерует список вакансий по полю salary. По умолчанию по возростанию,
         если reverse=True по убыванию """
 
@@ -45,4 +44,3 @@ class VacanciesHandler:
 
         sorted_vacancies = self.sort_vacancy(reverse=True)
         return sorted_vacancies[:self.num_top_vacancies]
-'strE'.lower()

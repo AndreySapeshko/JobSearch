@@ -2,9 +2,9 @@ from pathlib import Path
 
 import pytest
 
-from src.json_file_handler import JsonFileHandler
+from config import PATH_INVALID_FILE, PATH_TEST_VACANCIES_JSON
 from src.hh_reader_vacancies import HhReaderVacancies
-from config import PATH_TEST_VACANCIES_JSON, PATH_INVALID_FILE
+from src.json_file_handler import JsonFileHandler
 
 
 @pytest.mark.parametrize('file_name, expected', [

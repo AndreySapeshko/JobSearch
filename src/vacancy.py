@@ -13,7 +13,8 @@ class Vacancy(BaseVacancy):
 
     __slots__ = ('name', 'salary', 'salary_range', 'employer', 'requirement', 'description', 'url')
 
-    def __init__(self, name: str, salary: int, salary_range: str, employer: str, requirement: str, description: str, url: str) -> None:
+    def __init__(self, name: str, salary: int, salary_range: str, employer: str,
+                 requirement: str, description: str, url: str) -> None:
         self.name = name
         self.salary = salary
         self.salary_range = salary_range
@@ -37,5 +38,7 @@ class Vacancy(BaseVacancy):
     def __ge__(self, other: BaseVacancy) -> bool:
         return self.salary >= other.salary
 
-    def __eq__(self, other: BaseVacancy) -> bool:
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Vacancy):
+            return NotImplemented
         return self.salary == other.salary

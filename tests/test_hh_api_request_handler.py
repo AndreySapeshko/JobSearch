@@ -1,12 +1,10 @@
-import asyncio
-
-import pytest
-import aiohttp
-
-from unittest.mock import AsyncMock, MagicMock
-from pathlib import Path
-from aiohttp import ClientSession
 from asyncio import Semaphore
+from pathlib import Path
+from unittest.mock import AsyncMock, MagicMock
+
+import aiohttp
+import pytest
+from aiohttp import ClientSession
 
 from src.hh_api_request_handler import HhApiRequestHandler
 

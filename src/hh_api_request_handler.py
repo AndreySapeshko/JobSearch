@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from threading import Semaphore
+from typing import Any
 
 import aiohttp
-import asyncio
-
 from aiohttp import ClientSession
-from pathlib import Path
-from typing import Dict, Any
 
 from src.api_request_handler import ApiRequestHandler
 
@@ -21,7 +19,7 @@ class HhApiRequestHandler(ApiRequestHandler):
     def __init__(self, name_vacancy: str) -> None:
         self.__name_vacancy = name_vacancy
 
-    async def get_api_request(self, session: ClientSession, page: int = 0) -> Dict[str: Any]:
+    async def get_api_request(self, session: ClientSession, page: int = 0) -> dict:
         """ Отправляет запрос по api получает данные по вакансиям с сайта hh.ru
          если получает ошибку выбрасывает исключение """
 
@@ -36,7 +34,7 @@ class HhApiRequestHandler(ApiRequestHandler):
             response.raise_for_status()
             return await response.json()
 
-    async def save_vacancies_to_file(self, vacancies: Dict[str: Any], page: int) -> None:
+    async def save_vacancies_to_file(self, vacancies: dict, page: int) -> None:
         """ Принимает данные и номер страницы по вакансиям полученные с hh.ru и сохраняет в файл """
 
         Path('data').mkdir(exist_ok=True)

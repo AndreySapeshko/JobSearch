@@ -1,8 +1,10 @@
+from pathlib import Path
+
 import pytest
 
-from src.hh_reader_vacancies import HhReaderVacancies
-from config import PATH_TEST_VACANCIES_JSON
 from src.base_vacancy import BaseVacancy
+from src.hh_reader_vacancies import HhReaderVacancies
+from src.json_file_handler import JsonFileHandler
 
 
 def test_create_vacancy_from_hh(hh_vacancy) -> None:
@@ -24,13 +26,15 @@ def test_create_vacancy_from_hh(hh_vacancy) -> None:
     assert vacancy_without_salary.salary_range == 'Не указано'
 
 
-
 @pytest.mark.parametrize('pages', [(20), (22)])
 def test_hh_reader_vacancies(pages: int) -> None:
     hh_reader = HhReaderVacancies(pages)
     result = hh_reader.get_vacancies()
+    json_file_handler = JsonFileHandler()
+    file_name = Path(__file__).parent.parent / 'data' / 'hh_vacancies_page_0.json'
+    found_vacancies = json_file_handler.read_from_file(file_name)['found']
     assert isinstance(result, list)
-    assert len(result) == 2000
+    assert len(result) == found_vacancies
     for vacancy in result:
         assert isinstance(vacancy, BaseVacancy)
 
@@ -65,16 +69,16 @@ def test_get_valid_employer(hh_vacancy) -> None:
 
 def test_get_valid_requirement(hh_vacancy) -> None:
     hh_reader = HhReaderVacancies(1)
-    assert (hh_reader._HhReaderVacancies__get_valid_requirement(hh_vacancy) ==
-            'Крепкие знания <highlighttext>Python</highlighttext>. Опыт работы с FastAPI.')
+    assert (hh_reader._HhReaderVacancies__get_valid_requirement(hh_vacancy)
+            == 'Крепкие знания <highlighttext>Python</highlighttext>. Опыт работы с FastAPI.')
     hh_vacancy['snippet'] = None
     assert hh_reader._HhReaderVacancies__get_valid_requirement(hh_vacancy) == 'Требования не указаны'
 
 
 def test_get_valid_description(hh_vacancy) -> None:
     hh_reader = HhReaderVacancies(1)
-    assert (hh_reader._HhReaderVacancies__get_valid_description(hh_vacancy) ==
-            'Разработка программных продуктов в соответствии с требованиями проекта.')
+    assert (hh_reader._HhReaderVacancies__get_valid_description(hh_vacancy)
+            == 'Разработка программных продуктов в соответствии с требованиями проекта.')
     hh_vacancy['snippet'] = None
     assert hh_reader._HhReaderVacancies__get_valid_description(hh_vacancy) == 'Описание не указано'
 
