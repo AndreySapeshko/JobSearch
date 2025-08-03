@@ -44,9 +44,11 @@ class JsonFileHandler(FileHandler):
         for vacancy in vacancies:
             vacancy_dict = {}
             if hasattr(vacancy.__class__, '__slots__'):
-                vacancy_dict = {name : getattr(vacancy, name) for name in vacancy.__class__.__slots__}
+                vacancy_dict = {name : getattr(vacancy, name[2:]) for name in vacancy.__class__.__slots__}
             else:
                 for name, value in vars(vacancy).items():
+                    if name.startswith('__'):
+                        name = name[2:]
                     vacancy_dict[name] = value
             to_json_vacancies.append(vacancy_dict)
         return to_json_vacancies
