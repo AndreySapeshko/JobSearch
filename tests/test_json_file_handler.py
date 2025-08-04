@@ -5,6 +5,7 @@ import pytest
 from config import PATH_INVALID_FILE, PATH_TEST_VACANCIES_JSON
 from src.hh_reader_vacancies import HhReaderVacancies
 from src.json_file_handler import JsonFileHandler
+from src.vacancy import Vacancy
 
 
 @pytest.mark.parametrize('file_name, expected', [
@@ -24,3 +25,11 @@ def test_vacancies_for_json() -> None:
     json_vacancies = json_file_handler.vacancies_for_json(vacancies)
     assert len(json_vacancies) == 100
     assert len(json_vacancies[1]) == 7
+
+
+def test_create_vacancies_from_json() -> None:
+    file_name = Path(__file__).parent.parent / 'data' / 'top_vacancies.json'
+    json_file_handler = JsonFileHandler()
+    vacancies = json_file_handler.create_vacancies_from_json(file_name)
+    for vacancy in vacancies:
+        assert isinstance(vacancy, Vacancy)

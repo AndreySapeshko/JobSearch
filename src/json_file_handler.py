@@ -4,6 +4,7 @@ from pathlib import Path
 
 from src.base_vacancy import BaseVacancy
 from src.file_handler import FileHandler
+from src.vacancy import Vacancy
 
 
 class JsonFileHandler(FileHandler):
@@ -53,16 +54,34 @@ class JsonFileHandler(FileHandler):
             to_json_vacancies.append(vacancy_dict)
         return to_json_vacancies
 
-    def write_in_file(self, vacancies: list) -> None:
+    def write_in_file(self, vacancies: list, file_name: str = 'top_vacancies.json') -> None:
         """ Записывает данные в файл в формате json """
 
         vacancies_to_json = self.vacancies_for_json(vacancies)
-        file_name = Path(__file__).parent.parent / 'data' / 'top_vacancies.json'
-        with open(file_name, 'a', encoding='utf-8') as file:
+        path_file_name = Path(__file__).parent.parent / 'data' / file_name
+        with open(path_file_name, 'a', encoding='utf-8') as file:
             try:
                 json.dump(vacancies_to_json, file, ensure_ascii=False, indent=4)
             except Exception as e:
                 print(f'Произошла ошибка при записи в файл: {e}')
+
+    def create_vacancies_from_json(self, file_name: Path) -> list:
+        vacancies_from_json = self.read_from_file(file_name)
+        vacancies = []
+        for vacancy in vacancies_from_json:
+            vacancies.append(
+                Vacancy(
+                    name=vacancy.get('name'),
+                    salary=vacancy.get('salary'),
+                    salary_range=vacancy.get('salary_range'),
+                    employer=vacancy.get('employer'),
+                    description=vacancy.get('description'),
+                    requirement=vacancy.get('requirement'),
+                    url=vacancy.get('url')
+                )
+            )
+        return vacancies
+
 
     def delete_file(self, file_name: Path) -> None:
         pass
