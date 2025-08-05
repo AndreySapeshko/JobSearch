@@ -69,4 +69,7 @@ class Vacancy(BaseVacancy):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Vacancy):
             return NotImplemented
-        return self.salary == other.salary
+        return (self.name == other.name and self.salary == other.salary
+                and self.salary_range == other.salary_range and self.employer == other.employer
+                and self.description == other.description and self.requirement == other.requirement
+                and self.url == other.url)
