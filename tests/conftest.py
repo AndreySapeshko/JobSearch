@@ -35,10 +35,12 @@ def hh_vacancy() -> dict:
 @pytest.fixture
 def vacancy() -> Vacancy:
     return Vacancy(
+        '1',
         'Python developer',
         130000,
         'от 100000 до 160000',
         'employer',
+        '1',
         'Крепкие знания <highlighttext>Python</highlighttext>. Опыт работы с FastAPI.',
         'Разработка программных продуктов в соответствии с требованиями проекта.',
         'https://hh.ru/vacancy/122884182'
@@ -47,11 +49,11 @@ def vacancy() -> Vacancy:
 
 @pytest.fixture
 def vacancy1() -> Vacancy:
-    return Vacancy('python', 150000, '150000', 'employer',
-                   'requirement', 'responsibility', 'HTTPS://hh.ru')
+    return Vacancy('2', 'python', 150000, '150000', 'employer',
+                   '2', 'requirement', 'responsibility', 'HTTPS://hh.ru')
 
 
 @pytest.fixture
 def vacancy2() -> Vacancy:
-    return Vacancy('python', 150000, '150000', 'employer',
-                   'requirement', 'responsibility', 'HTTPS://hh.ru')
+    return Vacancy('3', 'python', 150000, '150000', 'employer',
+                   '3', 'requirement', 'responsibility', 'HTTPS://hh.ru')

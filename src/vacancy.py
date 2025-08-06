@@ -13,15 +13,21 @@ class Vacancy(BaseVacancy):
 
     __slots__ = ('__name', '__salary', '__salary_range', '__employer', '__requirement', '__description', '__url')
 
-    def __init__(self, name: str, salary: int, salary_range: str, employer: str,
-                 requirement: str, description: str, url: str) -> None:
+    def __init__(self, id: str, name: str, salary: int, salary_range: str, employer: str,
+                 employer_id: str, requirement: str, description: str, url: str) -> None:
+        self.__id = id
         self.__name = name
         self.__salary = salary
         self.__salary_range = salary_range
         self.__employer = employer
+        self.__employer_id = employer_id
         self.__description = description
         self.__requirement = requirement
         self.__url = url
+
+    @property
+    def id(self) -> str:
+        return self.__id
 
     @property
     def name(self) -> str:
@@ -38,6 +44,10 @@ class Vacancy(BaseVacancy):
     @property
     def employer(self) -> str:
         return self.__employer
+
+    @property
+    def employer_id(self) -> str:
+        return self.__employer_id
 
     @property
     def description(self) -> str:

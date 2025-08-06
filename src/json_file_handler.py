@@ -71,10 +71,12 @@ class JsonFileHandler(FileHandler):
         for vacancy in vacancies_from_json:
             vacancies.append(
                 Vacancy(
+                    id=vacancy.get('id'),
                     name=vacancy.get('name'),
                     salary=vacancy.get('salary'),
                     salary_range=vacancy.get('salary_range'),
                     employer=vacancy.get('employer'),
+                    employer_id=vacancy.get('employer_id'),
                     description=vacancy.get('description'),
                     requirement=vacancy.get('requirement'),
                     url=vacancy.get('url')
