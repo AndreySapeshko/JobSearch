@@ -54,11 +54,29 @@ class JsonFileHandler(FileHandler):
             to_json_vacancies.append(vacancy_dict)
         return to_json_vacancies
 
+    def select_new_vacancies(self, vacancies: list, path_file_name: Path) -> list:
+        """ Получает список вакансий и проверяет есть ли такие вакансии в сохраненном файле,
+        возвращает только новые вакансии, если файла нет возвращает не измененный список. """
+
+        if Path.exists(path_file_name):
+            new_vacancies = []
+            old_vacancies = self.create_vacancies_from_json(path_file_name)
+            for vacancy in vacancies:
+                is_in_old_vacancies = False
+                for old_vacancy in old_vacancies:
+                    if vacancy == old_vacancy:
+                        is_in_old_vacancies = True
+                if not is_in_old_vacancies:
+                    new_vacancies.append(vacancy)
+            vacancies = new_vacancies
+        return vacancies
+
     def write_in_file(self, vacancies: list, file_name: str = 'top_vacancies.json') -> None:
         """ Записывает данные в файл в формате json """
 
-        vacancies_to_json = self.vacancies_for_json(vacancies)
         path_file_name = Path(__file__).parent.parent / 'data' / file_name
+        vacancies = self.select_new_vacancies(vacancies, path_file_name)
+        vacancies_to_json = self.vacancies_for_json(vacancies)
         with open(path_file_name, 'a', encoding='utf-8') as file:
             try:
                 json.dump(vacancies_to_json, file, ensure_ascii=False, indent=4)
@@ -71,15 +89,15 @@ class JsonFileHandler(FileHandler):
         for vacancy in vacancies_from_json:
             vacancies.append(
                 Vacancy(
-                    id=vacancy.get('id'),
-                    name=vacancy.get('name'),
-                    salary=vacancy.get('salary'),
-                    salary_range=vacancy.get('salary_range'),
-                    employer=vacancy.get('employer'),
-                    employer_id=vacancy.get('employer_id'),
-                    description=vacancy.get('description'),
-                    requirement=vacancy.get('requirement'),
-                    url=vacancy.get('url')
+                    id=vacancy.get('__id'),
+                    name=vacancy.get('__name'),
+                    salary=vacancy.get('__salary'),
+                    salary_range=vacancy.get('__salary_range'),
+                    employer=vacancy.get('__employer'),
+                    employer_id=vacancy.get('__employer_id'),
+                    description=vacancy.get('__description'),
+                    requirement=vacancy.get('__requirement'),
+                    url=vacancy.get('__url')
                 )
             )
         return vacancies

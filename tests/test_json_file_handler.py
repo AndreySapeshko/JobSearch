@@ -33,3 +33,31 @@ def test_create_vacancies_from_json() -> None:
     vacancies = json_file_handler.create_vacancies_from_json(file_name)
     for vacancy in vacancies:
         assert isinstance(vacancy, Vacancy)
+
+
+def test_write_in_new_file(vacancies) -> None:
+    file_path = Path(__file__).parent.parent / 'data' / 'test_write_new_file.json'
+    if file_path.exists():
+        file_path.unlink()
+    jfh = JsonFileHandler()
+    jfh.write_in_file(vacancies=vacancies, file_name='test_write_new_file.json')
+    vacancies_from_file = jfh.create_vacancies_from_json(file_path)
+    for vacancy_from_file in vacancies_from_file:
+        is_in_vacancies = False
+        for vacancy in vacancies:
+            if vacancy == vacancy_from_file:
+                is_in_vacancies = True
+        assert is_in_vacancies
+
+
+def test_select_new_vacancies() -> None:
+    new_vacancy = Vacancy('new', 'python', 150000, '150000', 'employer',
+                   '3', 'requirement', 'responsibility', 'HTTPS://hh.ru')
+    old_vacancy = Vacancy('3', 'python', 150000, '150000', 'employer',
+                   '3', 'requirement', 'responsibility', 'HTTPS://hh.ru')
+    vacancies = [new_vacancy, old_vacancy]
+    file_path = Path(__file__).parent.parent / 'data' / 'test_select_vacancies.json'
+    jfh = JsonFileHandler()
+    vacancies = jfh.select_new_vacancies(vacancies,file_path)
+    assert new_vacancy in vacancies
+    assert old_vacancy not in vacancies

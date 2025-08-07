@@ -11,7 +11,7 @@ class Vacancy(BaseVacancy):
     __requirement: str
     __url: str
 
-    __slots__ = ('__name', '__salary', '__salary_range', '__employer', '__requirement', '__description', '__url')
+    __slots__ = ('__id', '__name', '__salary', '__salary_range', '__employer', '__employer_id', '__requirement', '__description', '__url')
 
     def __init__(self, id: str, name: str, salary: int, salary_range: str, employer: str,
                  employer_id: str, requirement: str, description: str, url: str) -> None:
@@ -79,7 +79,9 @@ class Vacancy(BaseVacancy):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Vacancy):
             return NotImplemented
+        if self.id != other.id:
+            return False
         return (self.name == other.name and self.salary == other.salary
                 and self.salary_range == other.salary_range and self.employer == other.employer
-                and self.description == other.description and self.requirement == other.requirement
-                and self.url == other.url)
+                and self.employer_id == other.employer_id and self.description == other.description
+                and self.requirement == other.requirement and self.url == other.url)

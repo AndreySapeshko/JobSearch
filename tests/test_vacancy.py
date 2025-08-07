@@ -8,9 +8,10 @@ def test_vacancy(vacancy) -> None:
     assert vacancy.url == 'https://hh.ru/vacancy/122884182'
 
 
-def test_vacancy_compare(vacancy, vacancy1, vacancy2) -> None:
+def test_vacancy_compare(vacancy, vacancy1, vacancy2, vacancy3) -> None:
     assert vacancy < vacancy1
     assert not vacancy > vacancy1
     assert vacancy1 <= vacancy2
-    assert vacancy1 == vacancy2
+    assert not vacancy1 == vacancy2
     assert vacancy1 > vacancy
+    assert vacancy2 == vacancy3
