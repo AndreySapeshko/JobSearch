@@ -74,7 +74,7 @@ class JsonFileHandler(FileHandler):
         return vacancies
 
     def write_in_file(self, vacancies: list, file_name: str = 'top_vacancies.json') -> None:
-        """ Записывает данные в файл в формате json """
+        """ Записывает только новые вакансии в файл в формате json """
 
         path_file_name = Path(__file__).parent.parent / 'data' / file_name
         vacancies = self.select_new_vacancies(vacancies, path_file_name)
@@ -86,6 +86,8 @@ class JsonFileHandler(FileHandler):
                 print(f'Произошла ошибка при записи в файл: {e}')
 
     def create_vacancies_from_json(self, file_name: Path) -> list:
+        """ Создает список объектов класса Vacancy из списка вакансий сохраненного в формате json """
+
         vacancies_from_json = self.read_from_file(file_name)
         vacancies = []
         for vacancy in vacancies_from_json:
