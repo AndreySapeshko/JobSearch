@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+from itertools import chain
 
 from src.base_vacancy import BaseVacancy
 from src.file_handler import FileHandler
@@ -69,6 +70,7 @@ class JsonFileHandler(FileHandler):
                 if not is_in_old_vacancies:
                     new_vacancies.append(vacancy)
             vacancies = new_vacancies
+            return list(chain(old_vacancies, vacancies))
         return vacancies
 
     def write_in_file(self, vacancies: list, file_name: str = 'top_vacancies.json') -> None:
@@ -77,7 +79,7 @@ class JsonFileHandler(FileHandler):
         path_file_name = Path(__file__).parent.parent / 'data' / file_name
         vacancies = self.select_new_vacancies(vacancies, path_file_name)
         vacancies_to_json = self.vacancies_for_json(vacancies)
-        with open(path_file_name, 'a', encoding='utf-8') as file:
+        with open(path_file_name, 'w', encoding='utf-8') as file:
             try:
                 json.dump(vacancies_to_json, file, ensure_ascii=False, indent=4)
             except Exception as e:

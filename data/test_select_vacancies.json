@@ -1,0 +1,35 @@
+[
+    {
+        "__id": "1",
+        "__name": "Python developer",
+        "__salary": 130000,
+        "__salary_range": "от 100000 до 160000",
+        "__employer": "employer",
+        "__employer_id": "1",
+        "__requirement": "Крепкие знания <highlighttext>Python</highlighttext>. Опыт работы с FastAPI.",
+        "__description": "Разработка программных продуктов в соответствии с требованиями проекта.",
+        "__url": "https://hh.ru/vacancy/122884182"
+    },
+    {
+        "__id": "2",
+        "__name": "python",
+        "__salary": 150000,
+        "__salary_range": "150000",
+        "__employer": "employer",
+        "__employer_id": "2",
+        "__requirement": "requirement",
+        "__description": "responsibility",
+        "__url": "HTTPS://hh.ru"
+    },
+    {
+        "__id": "3",
+        "__name": "python",
+        "__salary": 150000,
+        "__salary_range": "150000",
+        "__employer": "employer",
+        "__employer_id": "3",
+        "__requirement": "requirement",
+        "__description": "responsibility",
+        "__url": "HTTPS://hh.ru"
+    }
+]
