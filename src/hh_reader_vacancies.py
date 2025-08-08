@@ -13,6 +13,14 @@ class HhReaderVacancies(ReaderVacancies):
     def __init__(self, pages: int) -> None:
         self.pages = pages
 
+    def __get_valid_id(self, hh_vacancy: dict) -> str:
+        """ Проверяет параметр id для создания объекта класса Vacancy """
+
+        if hh_vacancy.get('id'):
+            return hh_vacancy.get('id')
+        else:
+            return 'id не указан'
+
     def __get_valid_name(self, hh_vacancy: dict) -> str:
         """ Проверяет параметр name для создания объекта класса Vacancy """
 
@@ -59,6 +67,14 @@ class HhReaderVacancies(ReaderVacancies):
         else:
             return 'Работодатель не указан'
 
+    def __get_valid_employer_id(self, hh_vacancy: dict) -> str:
+        """ Проверяет параметр employer_id для создания объекта класса Vacancy """
+
+        if hh_vacancy.get('employer') and hh_vacancy.get('employer').get('id'):
+            return hh_vacancy.get('employer').get('id')
+        else:
+            return 'id работодателя не указан'
+
     def __get_valid_requirement(self, hh_vacancy: dict) -> str:
         """ Проверяет параметр requirement для создания объекта класса Vacancy """
 
@@ -87,14 +103,16 @@ class HhReaderVacancies(ReaderVacancies):
         """ Метод принимает вакансию с сайта hh.ru из нее создает
         объект класса Vacancy и возвращает его """
 
+        id = self.__get_valid_id(hh_vacancy)
         name = self.__get_valid_name(hh_vacancy)
         salary = self.__get_valid_salary(hh_vacancy)
         salary_range = self.__get_valid_salary_range(hh_vacancy)
         employer = self.__get_valid_employer(hh_vacancy)
+        employer_id = self.__get_valid_employer_id(hh_vacancy)
         requirement = self.__get_valid_requirement(hh_vacancy)
         description = self.__get_valid_description(hh_vacancy)
         url = self.__get_valid_url(hh_vacancy)
-        return Vacancy(name, salary, salary_range, employer, requirement, description, url)
+        return Vacancy(id, name, salary, salary_range, employer, employer_id, requirement, description, url)
 
     def get_vacancies(self) -> list[BaseVacancy]:
         """ Из json файлов полученных с hh.ru с вакансиями создает список с
