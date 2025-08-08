@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 import pytest
 
@@ -8,7 +9,7 @@ from src.json_file_handler import JsonFileHandler
 
 
 @pytest.fixture
-def hh_vacancies_dict() -> dict:
+def hh_vacancies_dict() -> Any:
     with open(PATH_TEST_VACANCIES_JSON) as f:
         data = json.load(f)
     return data

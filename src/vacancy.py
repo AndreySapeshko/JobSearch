@@ -11,7 +11,8 @@ class Vacancy(BaseVacancy):
     __requirement: str
     __url: str
 
-    __slots__ = ('__id', '__name', '__salary', '__salary_range', '__employer', '__employer_id', '__requirement', '__description', '__url')
+    __slots__ = ('__id', '__name', '__salary', '__salary_range', '__employer',
+                 '__employer_id', '__requirement', '__description', '__url')
 
     def __init__(self, id: str, name: str, salary: int, salary_range: str, employer: str,
                  employer_id: str, requirement: str, description: str, url: str) -> None:
@@ -62,19 +63,19 @@ class Vacancy(BaseVacancy):
         return self.__url
 
     def __str__(self) -> str:
-        return f'Vacancy({self.name}, {self.salary}, {self.employer})'
+        return f'Vacancy(id: {self.__id}, {self.__name}, {self.__salary}, {self.__employer})'
 
     def __lt__(self, other: BaseVacancy) -> bool:
-        return self.salary < other.salary
+        return self.__salary < other.salary
 
     def __le__(self, other: BaseVacancy) -> bool:
-        return self.salary <= other.salary
+        return self.__salary <= other.salary
 
     def __gt__(self, other: BaseVacancy) -> bool:
-        return self.salary > other.salary
+        return self.__salary > other.salary
 
     def __ge__(self, other: BaseVacancy) -> bool:
-        return self.salary >= other.salary
+        return self.__salary >= other.salary
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Vacancy):

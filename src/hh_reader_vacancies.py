@@ -4,7 +4,6 @@ from src.base_vacancy import BaseVacancy
 from src.json_file_handler import JsonFileHandler
 from src.reader_vacancies import ReaderVacancies
 from src.vacancy import Vacancy
-from tests.conftest import hh_vacancy
 
 
 class HhReaderVacancies(ReaderVacancies):
