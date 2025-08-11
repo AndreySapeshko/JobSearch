@@ -6,39 +6,83 @@ class Vacancy(BaseVacancy):
     зарплата (среднее значение), диапазон зарплаты, работодатель, описание, требования и ссылка.
     В классе реализованы магические методы сравнения по полю зарплата (среднее значение). """
 
-    salary_range: str
-    description: str
-    requirement: str
-    url: str
+    __salary_range: str
+    __description: str
+    __requirement: str
+    __url: str
 
-    __slots__ = ('name', 'salary', 'salary_range', 'employer', 'requirement', 'description', 'url')
+    __slots__ = ('__id', '__name', '__salary', '__salary_range', '__employer',
+                 '__employer_id', '__requirement', '__description', '__url')
 
-    def __init__(self, name: str, salary: int, salary_range: str, employer: str,
-                 requirement: str, description: str, url: str) -> None:
-        self.name = name
-        self.salary = salary
-        self.salary_range = salary_range
-        self.employer = employer
-        self.description = description
-        self.requirement = requirement
-        self.url = url
+    def __init__(self, id: str, name: str, salary: int, salary_range: str, employer: str,
+                 employer_id: str, requirement: str, description: str, url: str) -> None:
+        self.__id = id
+        self.__name = name
+        self.__salary = salary
+        self.__salary_range = salary_range
+        self.__employer = employer
+        self.__employer_id = employer_id
+        self.__description = description
+        self.__requirement = requirement
+        self.__url = url
+
+    @property
+    def id(self) -> str:
+        return self.__id
+
+    @property
+    def name(self) -> str:
+        return self.__name
+
+    @property
+    def salary(self) -> int:
+        return self.__salary
+
+    @property
+    def salary_range(self) -> str:
+        return self.__salary_range
+
+    @property
+    def employer(self) -> str:
+        return self.__employer
+
+    @property
+    def employer_id(self) -> str:
+        return self.__employer_id
+
+    @property
+    def description(self) -> str:
+        return self.__description
+
+    @property
+    def requirement(self) -> str:
+        return self.__requirement
+
+    @property
+    def url(self) -> str:
+        return self.__url
 
     def __str__(self) -> str:
-        return f'Vacancy({self.name}, {self.salary}, {self.employer})'
+        return f'Vacancy(id: {self.__id}, {self.__name}, {self.__salary}, {self.__employer})'
 
     def __lt__(self, other: BaseVacancy) -> bool:
-        return self.salary < other.salary
+        return self.__salary < other.salary
 
     def __le__(self, other: BaseVacancy) -> bool:
-        return self.salary <= other.salary
+        return self.__salary <= other.salary
 
     def __gt__(self, other: BaseVacancy) -> bool:
-        return self.salary > other.salary
+        return self.__salary > other.salary
 
     def __ge__(self, other: BaseVacancy) -> bool:
-        return self.salary >= other.salary
+        return self.__salary >= other.salary
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Vacancy):
             return NotImplemented
-        return self.salary == other.salary
+        if self.id != other.id:
+            return False
+        return (self.name == other.name and self.salary == other.salary
+                and self.salary_range == other.salary_range and self.employer == other.employer
+                and self.employer_id == other.employer_id and self.description == other.description
+                and self.requirement == other.requirement and self.url == other.url)
