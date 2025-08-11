@@ -36,7 +36,7 @@ class JsonFileHandler(FileHandler):
             if data and len(data) != 0:
                 json_data = data
         #             logger.info('конвертация успешно завершена')
-        return None
+        return json_data
 
     def vacancies_for_json(self, vacancies: list[BaseVacancy]) -> list[dict]:
         """ Принимает список объектов класса BaseVacancy, возвращает список словорей

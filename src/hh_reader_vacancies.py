@@ -17,7 +17,7 @@ class HhReaderVacancies(ReaderVacancies):
         """ Проверяет параметр id для создания объекта класса Vacancy """
 
         if hh_vacancy.get('id'):
-            return hh_vacancy.get('id')
+            return 'hh id: ' + hh_vacancy.get('id')
         else:
             return 'id не указан'
 
