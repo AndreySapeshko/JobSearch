@@ -3,6 +3,8 @@ import unittest
 
 from unittest.mock import MagicMock
 
+import pytest
+
 from src.db_manager import DBManager
 
 def test_db_manager() -> None:
@@ -31,10 +33,30 @@ class TestDatabaseMethods(unittest.TestCase):
         mock_cursor = MagicMock()
         mock_rows = [(1, 'data1'), (2, 'data2')]
         mock_cursor.fetchall.return_value = mock_rows
-        db_manager = DBManager('localhost', 'hh_vacancies', 'andrdd17', 'u|D".s&qcX')  # Замените на ваш класс
+        db_manager = DBManager('localhost', 'hh_vacancies', 'andrdd17', 'u|D".s&qcX')
         result = db_manager.get_data_from_table(mock_cursor, 'test_table')
         mock_cursor.execute.assert_called_once_with('SELECT * FROM test_table')
 
         self.assertEqual(result, mock_rows)
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
+
+
+@pytest.mark.parametrize('args, expected', [
+    (['data1', 'data2', 'data3'], 1),
+    (['new', 'new', 'new'], None)
+])
+def test_get_arg_from_saved_data(args, expected, saved_data) -> None:
+    db_manager = DBManager('localhost', 'hh_vacancies', 'andrdd17', 'u|D".s&qcX')
+    result = db_manager.get_arg_from_saved_data(args, saved_data=saved_data)
+    assert result == expected
+
+
+@pytest.mark.parametrize('args, saved_data, expected', [
+    (['data1', 'data2', 'data3'], [], None),
+    (['data1', 'data2', 'data3'], None, None)
+])
+def test_get_arg_from_saved_data_none(args, saved_data, expected) -> None:
+    db_manager = DBManager('localhost', 'hh_vacancies', 'andrdd17', 'u|D".s&qcX')
+    result = db_manager.get_arg_from_saved_data(args, saved_data=saved_data)
+    assert result == expected

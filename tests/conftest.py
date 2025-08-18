@@ -87,3 +87,12 @@ def vacancies() -> list[Vacancy]:
                 '3', 'requirement', 'responsibility', 'HTTPS://hh.ru')
     ]
     return vacancies
+
+
+@pytest.fixture
+def saved_data() -> list:
+    return [
+        (1, 'data1', 'data2', 'data3'),
+        (2, 'name', 'salary', 'employer'),
+        (3, 'n', 's', 'e')
+    ]

@@ -30,12 +30,13 @@ class DBManager:
             data.append(row)
         return data
 
-    def get_arg_from_saved_data(self, *args, saved_data: list) -> Any:
+    def get_arg_from_saved_data(self, args: list, saved_data: list) -> Any:
         value = None
-        for data in saved_data:
-            if set(data).issubset(set(args)):
-                value = data[0]
-                break
+        if saved_data:
+            for data in saved_data:
+                if set(args).issubset(set(data)):
+                    value = data[0]
+                    break
         return value
 
 
