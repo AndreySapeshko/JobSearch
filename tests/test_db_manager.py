@@ -1,13 +1,14 @@
-from typing import Any
-
+import os
+import pytest
 import psycopg2
 import unittest
 
 from unittest.mock import MagicMock
-
-import pytest
+from typing import Any
+from dotenv import load_dotenv
 
 from src.db_manager import DBManager
+
 
 def test_db_manager() -> None:
     column_names = ['id_vacancy', 'hh_id_vacancy', 'name_vacancy', 'id_salary', 'id_employer',
@@ -75,3 +76,15 @@ def test_create_insert_sql_query(table_name: str, values: dict, returning: str, 
     db_manager = DBManager()
     result = db_manager.create_insert_sql_query(table_name, values, returning=returning)
     assert result == expected
+
+
+load_dotenv()
+db_test = os.getenv('TEST_DB_NAME')
+
+
+@pytest.mark.parametrize('db_name, expected', [(db_test, True), ('invalid_name', False)])
+def test_check_database_exists(db_name: str, expected: bool) -> None:
+    db_manager = DBManager()
+    result = db_manager.check_database_exists(db_name)
+    assert result == expected
+
