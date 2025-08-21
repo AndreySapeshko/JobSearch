@@ -1,3 +1,5 @@
+from typing import Any
+
 import psycopg2
 import unittest
 
@@ -8,9 +10,9 @@ import pytest
 from src.db_manager import DBManager
 
 def test_db_manager() -> None:
-    column_names = ['id_vacancy', 'hh_id_vacancy', 'name_vacancy', 'id_salary', 'id_employeer',
+    column_names = ['id_vacancy', 'hh_id_vacancy', 'name_vacancy', 'id_salary', 'id_employer',
                     'description', 'requirement', 'url']
-    db_manager = DBManager('localhost', 'hh_vacancies', 'andrdd17', 'u|D".s&qcX')
+    db_manager = DBManager()
     with psycopg2.connect(
             host=db_manager.host,
             database=db_manager.database,
@@ -33,7 +35,7 @@ class TestDatabaseMethods(unittest.TestCase):
         mock_cursor = MagicMock()
         mock_rows = [(1, 'data1'), (2, 'data2')]
         mock_cursor.fetchall.return_value = mock_rows
-        db_manager = DBManager('localhost', 'hh_vacancies', 'andrdd17', 'u|D".s&qcX')
+        db_manager = DBManager()
         result = db_manager.get_data_from_table(mock_cursor, 'test_table')
         mock_cursor.execute.assert_called_once_with('SELECT * FROM test_table')
 
@@ -43,11 +45,11 @@ class TestDatabaseMethods(unittest.TestCase):
 
 
 @pytest.mark.parametrize('args, expected', [
-    (['data1', 'data2', 'data3'], 1),
-    (['new', 'new', 'new'], None)
+    ({'c1': 'data1', 'c2': 'data2', 'c3': 'data3'}, 1),
+    ({'c1': 'new', 'c2': 'new', 'c3': 'new'}, None)
 ])
-def test_get_arg_from_saved_data(args, expected, saved_data) -> None:
-    db_manager = DBManager('localhost', 'hh_vacancies', 'andrdd17', 'u|D".s&qcX')
+def test_get_arg_from_saved_data(args: list, expected: Any, saved_data: list) -> None:
+    db_manager = DBManager()
     result = db_manager.get_arg_from_saved_data(args, saved_data=saved_data)
     assert result == expected
 
@@ -56,7 +58,20 @@ def test_get_arg_from_saved_data(args, expected, saved_data) -> None:
     (['data1', 'data2', 'data3'], [], None),
     (['data1', 'data2', 'data3'], None, None)
 ])
-def test_get_arg_from_saved_data_none(args, saved_data, expected) -> None:
-    db_manager = DBManager('localhost', 'hh_vacancies', 'andrdd17', 'u|D".s&qcX')
+def test_get_arg_from_saved_data_none(args: list, saved_data: Any, expected: Any) -> None:
+    db_manager = DBManager()
     result = db_manager.get_arg_from_saved_data(args, saved_data=saved_data)
+    assert result == expected
+
+
+@pytest.mark.parametrize('table_name, values, returning, expected', [
+    ('test_table', {'column1': 'data1', 'column2': 'data2', 'column3': 'data3'}, None,
+     'INSERT INTO test_table (column1, column2, column3)\nVALUES (%(column1)s, %(column2)s, %(column3)s)\n'),
+    ('test_table', {'column1': 'data1', 'column2': 'data2', 'column3': 'data3'}, 'returning_value',
+     'INSERT INTO test_table (column1, column2, column3)\nVALUES (%(column1)s, %(column2)s, %(column3)s)\n'
+     'RETURNING returning_value')
+])
+def test_create_insert_sql_query(table_name: str, values: dict, returning: str, expected: str) -> None:
+    db_manager = DBManager()
+    result = db_manager.create_insert_sql_query(table_name, values, returning=returning)
     assert result == expected
