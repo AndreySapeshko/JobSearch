@@ -98,10 +98,56 @@ def test_check_database_exists_exception() -> None:
 def test_create_database_with_tables() -> None:
     db_name = 'test_hh_vacancies'
     db_manager = DBManager()
-    # db_manager.database = 'test_hh_vacancies'
     assert db_manager.check_database_exists(db_name) == False
     db_manager.create_database_with_tables(db_name)
     assert db_manager.check_database_exists(db_name) == True
+    conn = psycopg2.connect(host=db_manager.host, database='postgres',
+                            user=db_manager.user, password=db_manager.password)
+    conn.autocommit = True
+    with conn.cursor() as cur:
+        cur.execute(f'DROP DATABASE {db_name}')
+    conn.close()
+
+
+@pytest.mark.parametrize('incoming_element, expected', [
+    ({'range_salary': 'from 100000 to 200000', 'avg_salary': 150000}, 1),
+    ({'range_salary': 'new', 'avg_salary': 1500000}, 3)
+])
+def test_add_if_new(incoming_element, expected) -> None:
+    db_name = 'test_db'
+    db_manager = DBManager()
+
+    conn = psycopg2.connect(host=db_manager.host, database='postgres',
+                            user=db_manager.user, password=db_manager.password)
+    conn.autocommit = True
+    with conn.cursor() as cur:
+        cur.execute(f'CREATE DATABASE {db_name}')
+    conn.close()
+
+    with psycopg2.connect(host=db_manager.host, database=db_name,
+                            user=db_manager.user, password=db_manager.password) as conn:
+        with conn.cursor() as cur:
+            cur.execute('''
+                CREATE TABLE salary (
+                    id_salary serial,
+                    range_salary varchar(40),
+                    avg_salary int,
+
+                    CONSTRAINT salary_id_salary PRIMARY KEY (id_salary)
+                )
+            ''')
+            cur.execute('''
+                INSERT INTO salary VALUES (DEFAULT, %s, %s)
+            ''', ('from 100000 to 200000', 150000))
+            cur.execute('''
+                INSERT INTO salary VALUES (DEFAULT, %s, %s)
+            ''', ('from 50000 to 150000', 100000))
+
+            saved_data = db_manager.get_data_from_table(cur, 'salary')
+            id_salary = db_manager.add_if_new(cur, incoming_element, saved_data, 'salary', 'id_salary')
+
+    assert id_salary == expected
+
     conn = psycopg2.connect(host=db_manager.host, database='postgres',
                             user=db_manager.user, password=db_manager.password)
     conn.autocommit = True
