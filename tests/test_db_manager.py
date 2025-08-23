@@ -145,8 +145,12 @@ def test_add_if_new(incoming_element, expected) -> None:
 
             saved_data = db_manager.get_data_from_table(cur, 'salary')
             id_salary = db_manager.add_if_new(cur, incoming_element, saved_data, 'salary', 'id_salary')
-
     assert id_salary == expected
+    is_in_saved_data = False
+    for data in saved_data:
+        if data[0] == id_salary:
+            is_in_saved_data = True
+    assert is_in_saved_data == True
 
     conn = psycopg2.connect(host=db_manager.host, database='postgres',
                             user=db_manager.user, password=db_manager.password)
