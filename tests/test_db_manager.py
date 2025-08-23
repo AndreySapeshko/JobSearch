@@ -10,7 +10,6 @@ from psycopg2 import OperationalError
 
 from src.db_manager import DBManager
 
-
 def test_db_manager() -> None:
     column_names = ['id_vacancy', 'hh_id_vacancy', 'name_vacancy', 'id_salary', 'id_employer',
                     'description', 'requirement', 'url']
