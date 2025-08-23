@@ -93,3 +93,18 @@ def test_check_database_exists_exception() -> None:
     db_manager = DBManager()
     db_manager.password = 'invalid_pass'
     assert db_manager.check_database_exists('test') == False
+
+
+def test_create_database_with_tables() -> None:
+    db_name = 'test_hh_vacancies'
+    db_manager = DBManager()
+    # db_manager.database = 'test_hh_vacancies'
+    assert db_manager.check_database_exists(db_name) == False
+    db_manager.create_database_with_tables(db_name)
+    assert db_manager.check_database_exists(db_name) == True
+    conn = psycopg2.connect(host=db_manager.host, database='postgres',
+                            user=db_manager.user, password=db_manager.password)
+    conn.autocommit = True
+    with conn.cursor() as cur:
+        cur.execute(f'DROP DATABASE {db_name}')
+    conn.close()
