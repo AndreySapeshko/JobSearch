@@ -158,3 +158,28 @@ def test_add_if_new(incoming_element, expected) -> None:
     with conn.cursor() as cur:
         cur.execute(f'DROP DATABASE {db_name}')
     conn.close()
+
+
+def test_update_database(vacancies, vacancy_new) -> None:
+    db_manager = DBManager()
+    db_manager.database = 'test_hh_vacancies'
+    db_manager.update_database(vacancies)
+    with psycopg2.connect(host=db_manager.host, database=db_manager.database,
+                          user=db_manager.user, password=db_manager.password) as conn:
+        with conn.cursor() as cur:
+            saved_vacancies = db_manager.get_data_from_table(cur, 'vacancies')
+            assert len(saved_vacancies) == 3
+            vacancies.append(vacancy_new)
+            db_manager.update_database(vacancies)
+            saved_vacancies = db_manager.get_data_from_table(cur, 'vacancies')
+            assert len(saved_vacancies) == 4
+            saved_vacancies = db_manager.get_data_from_table(cur, 'vacancies')
+            assert len(saved_vacancies) == 4
+
+    conn = psycopg2.connect(host=db_manager.host, database='postgres',
+                            user=db_manager.user, password=db_manager.password)
+    conn.autocommit = True
+    with conn.cursor() as cur:
+        cur.execute('DROP DATABASE test_hh_vacancies')
+    conn.close()
+

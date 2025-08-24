@@ -68,6 +68,12 @@ def vacancy3() -> Vacancy:
 
 
 @pytest.fixture
+def vacancy_new() -> Vacancy:
+    return Vacancy('4', 'python', 1500000, 'to 1500000', 'new_employer',
+                   '4', 'requirement_new', 'responsibility_new', 'HTTPS://hh.ru')
+
+
+@pytest.fixture
 def vacancies() -> list[Vacancy]:
     vacancies =[
         Vacancy(
