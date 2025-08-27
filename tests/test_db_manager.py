@@ -205,3 +205,14 @@ def test_get_companies_and_vacancies_count() -> None:
         assert isinstance(result, list)
         assert isinstance(result[0], tuple)
         assert len(result[0]) == 2
+
+
+def test_get_all_vacancies() -> None:
+    db_manager = DBManager()
+    result = db_manager.get_all_vacancies()
+    if len(result) == 0:
+        assert len(result) == 0
+    else:
+        assert isinstance(result, list)
+        assert isinstance(result[0], tuple)
+        assert len(result[0]) == 4
