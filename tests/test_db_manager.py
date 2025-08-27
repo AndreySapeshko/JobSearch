@@ -191,3 +191,17 @@ def test_get_data_on_request() -> None:
     result = db_manager.get_data_on_request(request)
     assert isinstance(result, list)
     assert isinstance(result[0], tuple)
+    request = f'SELECT * FROM {'invalid_name'}'
+    result = db_manager.get_data_on_request(request)
+    assert result == []
+
+
+def test_get_companies_and_vacancies_count() -> None:
+    db_manager = DBManager()
+    result = db_manager.get_companies_and_vacancies_count()
+    if len(result) == 0:
+        assert len(result) == 0
+    else:
+        assert isinstance(result, list)
+        assert isinstance(result[0], tuple)
+        assert len(result[0]) == 2
