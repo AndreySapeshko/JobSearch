@@ -234,3 +234,14 @@ def test_get_vacancies_with_higher_salary() -> None:
         assert isinstance(result, list)
         assert isinstance(result[0], tuple)
         assert len(result[0]) == 4
+
+
+def test_get_vacancies_with_keyword() -> list:
+    db_manager = DBManager()
+    result = db_manager.get_vacancies_with_keyword('python')
+    if len(result) == 0:
+        assert len(result) == 0
+    else:
+        assert isinstance(result, list)
+        assert isinstance(result[0], tuple)
+        assert len(result[0]) == 4

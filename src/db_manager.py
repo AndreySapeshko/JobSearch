@@ -258,6 +258,18 @@ class DBManager:
         data = self.get_data_on_request(request)
         return data
 
+    def get_vacancies_with_keyword(self, key_word: str) -> list:
+        request = (
+            "SELECT employers.name_employer, vacancies.name_vacancy,\n"
+            "salary.range_salary, vacancies.url\n"
+            "FROM vacancies\n"
+            "INNER JOIN employers USING (id_employer)\n"
+            "INNER JOIN salary USING (id_salary)\n"
+            f"WHERE vacancies.name_vacancy ILIKE '%{key_word}%'"
+        )
+        data = self.get_data_on_request(request)
+        return data
+
 
 db_manager = DBManager()
-print(db_manager.get_vacancies_with_higher_salary())
+print(db_manager.get_vacancies_with_keyword('java'))
