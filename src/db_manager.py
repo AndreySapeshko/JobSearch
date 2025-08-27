@@ -195,3 +195,56 @@ class DBManager:
 
                     # Проверяем есть ли такая запись в таблице vacancies, если нет записываем и добавляем в список
                     self.add_if_new(cur, table_vacancies, saved_vacancies, 'vacancies', 'id_vacancy')
+
+    def get_data_on_request(self, request: str) -> list:
+        rows = []
+        try:
+            with psycopg2.connect(host=self.host, database=self.database,
+                                  user=self.user, password=self.password) as conn:
+                with conn.cursor() as cur:
+                    cur.execute(request)
+                    rows = cur.fetchall()
+
+        except Exception as e:
+            print(f'При обработке запроса {request} произошла ошибка: {e}')
+            rows = []
+        return rows
+
+    def get_companies_and_vacancies_count(self) -> list:
+        request = '''
+            SELECT employers.name_employer, COUNT (vacancies.id_vacancy)
+            FROM vacancies
+            INNER JOIN employers USING (id_employer)
+            GROUP BY employers.name_employer
+        '''
+        data = self.get_data_on_request(request)
+        return data
+
+    def get_all_vacancies(self) -> list:
+        request = '''
+            SELECT employers.name_employer, vacancies.name_vacancy, 
+            salary.range_salary, vacancies.url
+            FROM vacancies
+            INNER JOIN employers USING (id_employer)
+            INNER JOIN salary USING (id_salary)
+        '''
+        data = self.get_data_on_request(request)
+        return data
+
+    def get_avg_salary(self) -> float:
+        request = '''
+            SELECT ROUND(AVG(salary.avg_salary), 2) AS avg_salary
+            FROM vacancies
+            INNER JOIN salary USING (id_salary)
+            WHERE salary.avg_salary != 0;
+        '''
+        data = self.get_data_on_request(request)
+        if len(data) == 0:
+            result = 0.0
+        else:
+            result = float(data[0][0])
+        return result
+
+
+db_manager = DBManager()
+print(type(0.0))
