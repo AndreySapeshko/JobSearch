@@ -233,18 +233,31 @@ class DBManager:
 
     def get_avg_salary(self) -> float:
         request = '''
-            SELECT ROUND(AVG(salary.avg_salary), 2) AS avg_salary
+            SELECT ROUND(AVG(salary.avg_salary), 0) AS avg_salary
             FROM vacancies
             INNER JOIN salary USING (id_salary)
             WHERE salary.avg_salary != 0;
         '''
         data = self.get_data_on_request(request)
         if len(data) == 0:
-            result = 0.0
+            result = 0
         else:
-            result = float(data[0][0])
+            result = int(data[0][0])
         return result
+
+    def get_vacancies_with_higher_salary(self) -> list:
+        avg_salary = self.get_avg_salary()
+        request = (
+            'SELECT employers.name_employer, vacancies.name_vacancy,\n' 
+            'salary.range_salary, vacancies.url\n'
+            'FROM vacancies\n'
+            'INNER JOIN employers USING (id_employer)\n'
+            'INNER JOIN salary USING (id_salary)\n'
+            f'WHERE salary.avg_salary > {avg_salary}'
+        )
+        data = self.get_data_on_request(request)
+        return data
 
 
 db_manager = DBManager()
-print(type(0.0))
+print(db_manager.get_vacancies_with_higher_salary())

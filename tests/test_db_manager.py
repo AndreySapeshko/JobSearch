@@ -221,5 +221,16 @@ def test_get_all_vacancies() -> None:
 def test_get_avg_salary() -> None:
     db_manager = DBManager()
     result = db_manager.get_avg_salary()
-    assert isinstance(result, float)
+    assert isinstance(result, int)
     assert result >= 0
+
+
+def test_get_vacancies_with_higher_salary() -> None:
+    db_manager = DBManager()
+    result = db_manager.get_vacancies_with_higher_salary()
+    if len(result) == 0:
+        assert len(result) == 0
+    else:
+        assert isinstance(result, list)
+        assert isinstance(result[0], tuple)
+        assert len(result[0]) == 4
