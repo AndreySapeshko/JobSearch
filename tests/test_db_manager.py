@@ -183,3 +183,11 @@ def test_update_database(vacancies, vacancy_new) -> None:
         cur.execute('DROP DATABASE test_hh_vacancies')
     conn.close()
 
+
+def test_get_data_on_request() -> None:
+    db_manager = DBManager()
+    db_manager.database = os.getenv('TEST_DB_NAME')
+    request = f'SELECT * FROM {os.getenv('TEST_TABLE')}'
+    result = db_manager.get_data_on_request(request)
+    assert isinstance(result, list)
+    assert isinstance(result[0], tuple)
