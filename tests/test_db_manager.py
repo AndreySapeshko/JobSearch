@@ -6,9 +6,9 @@ from unittest.mock import MagicMock
 import psycopg2
 import pytest
 from dotenv import load_dotenv
-from psycopg2 import OperationalError
 
 from src.db_manager import DBManager
+from src.vacancy import Vacancy
 
 
 def test_db_manager() -> None:
@@ -22,8 +22,8 @@ def test_db_manager() -> None:
             password=db_manager.password) as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT column_name 
-                FROM information_schema.columns 
+                SELECT column_name
+                FROM information_schema.columns
                 WHERE table_name = 'vacancies'
                 ORDER BY ordinal_position
             """)
@@ -33,7 +33,7 @@ def test_db_manager() -> None:
 
 
 class TestDatabaseMethods(unittest.TestCase):
-    def test_get_data_from_table(self):
+    def test_get_data_from_table(self) -> None:
         mock_cursor = MagicMock()
         mock_rows = [(1, 'data1'), (2, 'data2')]
         mock_cursor.fetchall.return_value = mock_rows
@@ -50,7 +50,7 @@ class TestDatabaseMethods(unittest.TestCase):
     ({'c1': 'data1', 'c2': 'data2', 'c3': 'data3'}, 1),
     ({'c1': 'new', 'c2': 'new', 'c3': 'new'}, None)
 ])
-def test_get_arg_from_saved_data(args: list, expected: Any, saved_data: list) -> None:
+def test_get_arg_from_saved_data(args: dict, expected: Any, saved_data: list) -> None:
     db_manager = DBManager()
     result = db_manager.get_arg_from_saved_data(args, saved_data=saved_data)
     assert result == expected
@@ -60,7 +60,7 @@ def test_get_arg_from_saved_data(args: list, expected: Any, saved_data: list) ->
     (['data1', 'data2', 'data3'], [], None),
     (['data1', 'data2', 'data3'], None, None)
 ])
-def test_get_arg_from_saved_data_none(args: list, saved_data: Any, expected: Any) -> None:
+def test_get_arg_from_saved_data_none(args: dict, saved_data: Any, expected: Any) -> None:
     db_manager = DBManager()
     result = db_manager.get_arg_from_saved_data(args, saved_data=saved_data)
     assert result == expected
@@ -99,9 +99,9 @@ def test_check_database_exists_exception() -> None:
 def test_create_database_with_tables() -> None:
     db_name = 'test_hh_vacancies'
     db_manager = DBManager()
-    assert db_manager.check_database_exists(db_name) == False
+    assert db_manager.check_database_exists(db_name) is False
     db_manager.create_database_with_tables(db_name)
-    assert db_manager.check_database_exists(db_name) == True
+    assert db_manager.check_database_exists(db_name) is True
     conn = psycopg2.connect(host=db_manager.host, database='postgres',
                             user=db_manager.user, password=db_manager.password)
     conn.autocommit = True
@@ -114,7 +114,7 @@ def test_create_database_with_tables() -> None:
     ({'range_salary': 'from 100000 to 200000', 'avg_salary': 150000}, 1),
     ({'range_salary': 'new', 'avg_salary': 1500000}, 3)
 ])
-def test_add_if_new(incoming_element, expected) -> None:
+def test_add_if_new(incoming_element: dict, expected: int) -> None:
     db_name = 'test_db'
     db_manager = DBManager()
 
@@ -126,7 +126,7 @@ def test_add_if_new(incoming_element, expected) -> None:
     conn.close()
 
     with psycopg2.connect(host=db_manager.host, database=db_name,
-                            user=db_manager.user, password=db_manager.password) as conn:
+                          user=db_manager.user, password=db_manager.password) as conn:
         with conn.cursor() as cur:
             cur.execute('''
                 CREATE TABLE salary (
@@ -151,7 +151,7 @@ def test_add_if_new(incoming_element, expected) -> None:
     for data in saved_data:
         if data[0] == id_salary:
             is_in_saved_data = True
-    assert is_in_saved_data == True
+    assert is_in_saved_data is True
 
     conn = psycopg2.connect(host=db_manager.host, database='postgres',
                             user=db_manager.user, password=db_manager.password)
@@ -161,7 +161,7 @@ def test_add_if_new(incoming_element, expected) -> None:
     conn.close()
 
 
-def test_update_database(vacancies, vacancy_new) -> None:
+def test_update_database(vacancies: list, vacancy_new: Vacancy) -> None:
     db_manager = DBManager()
     db_manager.database = 'test_hh_vacancies'
     db_manager.update_database(vacancies)
@@ -237,7 +237,7 @@ def test_get_vacancies_with_higher_salary() -> None:
         assert len(result[0]) == 4
 
 
-def test_get_vacancies_with_keyword() -> list:
+def test_get_vacancies_with_keyword() -> None:
     db_manager = DBManager()
     result = db_manager.get_vacancies_with_keyword('python')
     if len(result) == 0:
