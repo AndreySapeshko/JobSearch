@@ -1,7 +1,7 @@
 import json
 import os
-from pathlib import Path
 from itertools import chain
+from pathlib import Path
 
 from src.base_vacancy import BaseVacancy
 from src.file_handler import FileHandler

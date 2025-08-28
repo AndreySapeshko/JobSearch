@@ -1,11 +1,13 @@
+import os
 from typing import Any
+
+import psycopg2
 from dotenv import load_dotenv
 from psycopg2 import OperationalError
+from psycopg2.extensions import cursor as Cursor
 
 from src.vacancy import Vacancy
 
-import psycopg2
-import os
 
 class DBManager:
     host: str
@@ -14,13 +16,26 @@ class DBManager:
     password: str
 
     def __init__(self) -> None:
-        load_dotenv()
-        self.host = os.getenv('DATABASE_HOST')
-        self.database = os.getenv('DATABASE_NAME')
-        self.user = os.getenv('DATABASE_USER')
-        self.password = os.getenv('DATABASE_PASSWORD')
+        """ Создает объект DBManager с атрибутами: host, database, user, password,
+        необхадимыми для подключения к базе данных в PostgresSQL.
+        Значения атребутов размещены в фойле .env """
 
-    def get_data_from_table(self, cursor, table_name: str) -> list:
+        load_dotenv()
+        host = os.getenv('DATABASE_HOST')
+        database = os.getenv('DATABASE_NAME')
+        user = os.getenv('DATABASE_USER')
+        password = os.getenv('DATABASE_PASSWORD')
+        if host and database and user and password:
+            self.host = host
+            self.database = database
+            self.user = user
+            self.password = password
+        else:
+            raise TypeError('Атрибуты не могут быть None. Объект DBManager не создан, проверьте файл .env')
+
+    def get_data_from_table(self, cursor: Cursor, table_name: str) -> list:
+        """ Получает все данные из таблици по переданному имени таблицы """
+
         data = []
         try:
             queri = f'SELECT * FROM {table_name}'
@@ -34,6 +49,9 @@ class DBManager:
         return data
 
     def get_arg_from_saved_data(self, args: dict, saved_data: list) -> Any:
+        """ Проверяет есть ли в сохраненых данных переданные аргументы,
+        если есть возвращает номер id, если нет None """
+
         value = None
         if saved_data:
             for data in saved_data:
@@ -45,7 +63,9 @@ class DBManager:
                     return data[0]
         return value
 
-    def create_insert_sql_query(self,table_name: str, values: dict, returning=None) -> str:
+    def create_insert_sql_query(self, table_name: str, values: dict, returning: str | None = None) -> str:
+        """ Создает запрос на внесение данных """
+
         named_values = ''
         for key in values.keys():
             named_values += f'%({key})s, '
@@ -56,8 +76,8 @@ class DBManager:
             query += f'RETURNING {returning}'
         return query
 
-    def check_database_exists(self, db_name: str) -> Any:
-        """Проверяет существование базы данных"""
+    def check_database_exists(self, db_name: str) -> bool:
+        """ Проверяет существование базы данных """
 
         try:
             conn = psycopg2.connect(
@@ -79,12 +99,14 @@ class DBManager:
 
         except OperationalError as e:
             print(f"Ошибка подключения: {e}")
-            return None
+            return False
 
     def create_database_with_tables(self, name_database: str) -> None:
+        """ Создает базу данных hh_vacancies с таблицами """
+
         try:
             conn = psycopg2.connect(host=self.host, database='postgres',
-                             user=self.user, password=self.password)
+                                    user=self.user, password=self.password)
             conn.autocommit = True
             with conn.cursor() as cur:
                 cur.execute(f'CREATE DATABASE {name_database}')
@@ -126,9 +148,9 @@ class DBManager:
                             url varchar(50),
 
                             CONSTRAINT pk_vacancies_id_vacancy PRIMARY KEY (id_vacancy),
-                            CONSTRAINT fk_vacancies_salary FOREIGN KEY(id_salary) 
+                            CONSTRAINT fk_vacancies_salary FOREIGN KEY (id_salary) 
                             REFERENCES salary(id_salary),
-                            CONSTRAINT fk_vacancies_employers FOREIGN KEY(id_employer) 
+                            CONSTRAINT fk_vacancies_employers FOREIGN KEY (id_employer) 
                             REFERENCES employers(id_employer)
                         )
                     ''')
@@ -136,7 +158,9 @@ class DBManager:
                 conn.rollback()
                 print(f'Ошибка при создании таблиц: {e}')
 
-    def add_if_new(self, cursor, args: dict, saved_data: list, name_table: str, returning: str = None) -> int:
+    def add_if_new(self, cursor: Cursor, args: dict, saved_data: list,
+                   name_table: str, returning: str | None = None) -> int:
+        """ Если переданных аргументов нет в сохраненых данных добавляет их в БД """
         id_arg = self.get_arg_from_saved_data(args, saved_data)
         if not id_arg:
             query_to_insert = self.create_insert_sql_query(name_table, args, returning)
@@ -148,14 +172,11 @@ class DBManager:
             saved_data.append(tuple(new_element))
         return id_arg
 
-
     def update_database(self, vacancies: list[Vacancy]) -> None:
         """ Получает список вакансий, провереяет есть ли такие в БД и записывает новые """
 
         # Проверяем есть ли необхадимая БД, если нет создаем
         is_database_exist = self.check_database_exists(self.database)
-        if is_database_exist is None:
-            return
         if not is_database_exist:
             self.create_database_with_tables(self.database)
         with psycopg2.connect(host=self.host, database=self.database,
@@ -176,7 +197,6 @@ class DBManager:
                         'hh_id_employer': vacancy.employer_id[:15]
                     }
                     # Проверяем есть ли такая запись в таблице salary, если нет записываем и добавляем в список
-                    print(saved_salary)
                     id_salary = self.add_if_new(cur, table_salary, saved_salary, 'salary', 'id_salary')
 
                     # Проверяем есть ли такая запись в таблице employers, если нет записываем и добавляем в список
@@ -197,6 +217,7 @@ class DBManager:
                     self.add_if_new(cur, table_vacancies, saved_vacancies, 'vacancies', 'id_vacancy')
 
     def get_data_on_request(self, request: str) -> list:
+        """ Получает данные из БД по переданному запросу """
         rows = []
         try:
             with psycopg2.connect(host=self.host, database=self.database,
@@ -211,6 +232,8 @@ class DBManager:
         return rows
 
     def get_companies_and_vacancies_count(self) -> list:
+        """ Получает из БД название всех работодателей с количеством вакансий """
+
         request = '''
             SELECT employers.name_employer, COUNT (vacancies.id_vacancy)
             FROM vacancies
@@ -221,6 +244,8 @@ class DBManager:
         return data
 
     def get_all_vacancies(self) -> list:
+        """ Получает все вакансии сохранные в БД """
+
         request = '''
             SELECT employers.name_employer, vacancies.name_vacancy, 
             salary.range_salary, vacancies.url
@@ -232,6 +257,8 @@ class DBManager:
         return data
 
     def get_avg_salary(self) -> float:
+        """ Получает из БД среднюю зарплату по всем вакансиям в которых указана зарплата """
+
         request = '''
             SELECT ROUND(AVG(salary.avg_salary), 0) AS avg_salary
             FROM vacancies
@@ -246,9 +273,11 @@ class DBManager:
         return result
 
     def get_vacancies_with_higher_salary(self) -> list:
+        """ Получает из БД вакансии с зарплатой выше средней """
+
         avg_salary = self.get_avg_salary()
         request = (
-            'SELECT employers.name_employer, vacancies.name_vacancy,\n' 
+            'SELECT employers.name_employer, vacancies.name_vacancy,\n'
             'salary.range_salary, vacancies.url\n'
             'FROM vacancies\n'
             'INNER JOIN employers USING (id_employer)\n'
@@ -259,6 +288,8 @@ class DBManager:
         return data
 
     def get_vacancies_with_keyword(self, key_word: str) -> list:
+        """ Получает из БД вакансии наименование которых содержит переданное слово """
+
         request = (
             "SELECT employers.name_employer, vacancies.name_vacancy,\n"
             "salary.range_salary, vacancies.url\n"
@@ -269,7 +300,3 @@ class DBManager:
         )
         data = self.get_data_on_request(request)
         return data
-
-
-db_manager = DBManager()
-print(db_manager.get_vacancies_with_keyword('java'))

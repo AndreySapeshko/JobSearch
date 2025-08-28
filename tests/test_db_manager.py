@@ -1,14 +1,15 @@
 import os
-import pytest
-import psycopg2
 import unittest
-
-from unittest.mock import MagicMock
 from typing import Any
+from unittest.mock import MagicMock
+
+import psycopg2
+import pytest
 from dotenv import load_dotenv
 from psycopg2 import OperationalError
 
 from src.db_manager import DBManager
+
 
 def test_db_manager() -> None:
     column_names = ['id_vacancy', 'hh_id_vacancy', 'name_vacancy', 'id_salary', 'id_employer',

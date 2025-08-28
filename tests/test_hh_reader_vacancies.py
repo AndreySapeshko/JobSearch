@@ -32,7 +32,8 @@ def test_hh_reader_vacancies(pages: int) -> None:
     result = hh_reader.get_vacancies()
     json_file_handler = JsonFileHandler()
     file_name = Path(__file__).parent.parent / 'data' / 'hh_vacancies_page_0.json'
-    found_vacancies = json_file_handler.read_from_file(file_name)['found']
+    found_vacancies = (json_file_handler.read_from_file(file_name)['pages']
+                       * json_file_handler.read_from_file(file_name)['per_page'])
     assert isinstance(result, list)
     assert len(result) == found_vacancies
     for vacancy in result:

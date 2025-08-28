@@ -4,8 +4,8 @@ from typing import Any
 import pytest
 
 from config import PATH_TEST_VACANCIES_JSON
-from src.vacancy import Vacancy
 from src.json_file_handler import JsonFileHandler
+from src.vacancy import Vacancy
 
 
 @pytest.fixture
