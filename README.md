@@ -19,10 +19,11 @@ pip install -r requirements.txt
 Для использования и тестирования программы необходимо
 создать в корне проекта файл .env содержащий аргументы для
 подключения к базам данных в PostgresSQL по шаблону:
+
 DATABASE_HOST=localhost     # Хост для базы данных
 DATABASE_USER=MyUser      # Имя пользователя базы данных
 DATABASE_PASSWORD=MyPassword  # Пароль базы данных
-DATABASE_NAME=MyDatabaseName    # Имя базы данных
+DATABASE_NAME=hh_vacancies    # Имя базы данных
 TEST_DB_NAME=MyTestDBName  # Имя существующей БД для теста
 TEST_TABLE=MyTableName    # Имя таблици в существующей БД для теста
 
