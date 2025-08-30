@@ -42,7 +42,7 @@ class HhApiRequestHandler(ApiRequestHandler):
         with open(file_path, 'w', encoding='utf-8') as file:
             json.dump(vacancies, file, ensure_ascii=False, indent=4)
 
-    async def fetch_page(self, semaphore: Semaphore, session: ClientSession,
+    async def fetch_page_to_save(self, semaphore: Semaphore, session: ClientSession,
                          handler: HhApiRequestHandler, page: int) -> Any:
         """ метод в асинхронном режиме получает страницу с вакансиями и сохраняет в файл """
 
@@ -50,6 +50,18 @@ class HhApiRequestHandler(ApiRequestHandler):
             try:
                 vacancies = await handler.get_api_request(session, page)
                 await handler.save_vacancies_to_file(vacancies, page)
+                return vacancies
+            except aiohttp.ClientError as e:
+                print(f'Ошибка при получении страницы {page}: {e}')
+                return None
+
+    async def fetch_page(self, semaphore: Semaphore, session: ClientSession,
+                         handler: HhApiRequestHandler, page: int) -> Any:
+        """ метод в асинхронном режиме получает страницу с вакансиями и сохраняет в файл """
+
+        async with semaphore:
+            try:
+                vacancies = await handler.get_api_request(session, page)
                 return vacancies
             except aiohttp.ClientError as e:
                 print(f'Ошибка при получении страницы {page}: {e}')

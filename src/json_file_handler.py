@@ -1,7 +1,8 @@
 import json
 import os
-from pathlib import Path
 from itertools import chain
+from pathlib import Path
+from typing import Any
 
 from src.base_vacancy import BaseVacancy
 from src.file_handler import FileHandler
@@ -15,7 +16,7 @@ class JsonFileHandler(FileHandler):
     def __init__(self) -> None:
         pass
 
-    def read_from_file(self, file_name: Path) -> None:
+    def read_from_file(self, file_name: Path) -> Any:
         """ конвертирует json файл в python, если файла нет или пустой вернет пустой список """
 
         json_data: dict = {}
@@ -36,7 +37,7 @@ class JsonFileHandler(FileHandler):
             if data and len(data) != 0:
                 json_data = data
         #             logger.info('конвертация успешно завершена')
-        return None
+        return json_data
 
     def vacancies_for_json(self, vacancies: list[BaseVacancy]) -> list[dict]:
         """ Принимает список объектов класса BaseVacancy, возвращает список словорей

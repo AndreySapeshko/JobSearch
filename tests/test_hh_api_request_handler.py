@@ -40,7 +40,7 @@ async def test_fetch_page_success():
     mock_handler.save_vacancies_to_file = AsyncMock()
 
     instance = HhApiRequestHandler('Python')
-    result = await instance.fetch_page(
+    result = await instance.fetch_page_to_save(
         semaphore=mock_semaphore,
         session=mock_session,
         handler=mock_handler,
@@ -62,7 +62,7 @@ async def test_fetch_page_failure():
     mock_handler.get_api_request = AsyncMock(side_effect=aiohttp.ClientError("API недоступен"))
 
     instance = HhApiRequestHandler('Python')
-    result = await instance.fetch_page(
+    result = await instance.fetch_page_to_save(
         semaphore=mock_semaphore,
         session=mock_session,
         handler=mock_handler,

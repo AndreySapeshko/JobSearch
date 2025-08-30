@@ -1,11 +1,12 @@
 import json
+from pathlib import Path
 from typing import Any
 
 import pytest
 
 from config import PATH_TEST_VACANCIES_JSON
-from src.vacancy import Vacancy
 from src.json_file_handler import JsonFileHandler
+from src.vacancy import Vacancy
 
 
 @pytest.fixture
@@ -68,6 +69,12 @@ def vacancy3() -> Vacancy:
 
 
 @pytest.fixture
+def vacancy_new() -> Vacancy:
+    return Vacancy('4', 'python', 1500000, 'to 1500000', 'new_employer',
+                   '4', 'requirement_new', 'responsibility_new', 'HTTPS://hh.ru')
+
+
+@pytest.fixture
 def vacancies() -> list[Vacancy]:
     vacancies =[
         Vacancy(
@@ -87,3 +94,25 @@ def vacancies() -> list[Vacancy]:
                 '3', 'requirement', 'responsibility', 'HTTPS://hh.ru')
     ]
     return vacancies
+
+
+@pytest.fixture
+def saved_data() -> list:
+    return [
+        (1, 'data1', 'data2', 'data3'),
+        (2, 'name', 'salary', 'employer'),
+        (3, 'n', 's', 'e')
+    ]
+
+@pytest.fixture
+def json_page_from_hh() -> dict:
+    jason_handler = JsonFileHandler()
+    path_file_name = Path(__file__).parent.parent / 'data' / 'test_hh_page.json'
+    return jason_handler.read_from_file(path_file_name)
+
+
+@pytest.fixture
+def short_json_page_from_hh() -> dict:
+    jason_handler = JsonFileHandler()
+    path_file_name = Path(__file__).parent.parent / 'data' / 'shortened_test_hh_page.json'
+    return jason_handler.read_from_file(path_file_name)
