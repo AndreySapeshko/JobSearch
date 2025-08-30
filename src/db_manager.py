@@ -176,7 +176,7 @@ class DBManager:
             saved_data.append(tuple(new_element))
         return id_arg
 
-    def update_database(self, data_from_hh: dict) -> None:
+    def update_database(self, data_from_hh: list) -> None:
         """ Получает список вакансий, провереяет есть ли такие в БД и записывает новые """
 
         # Проверяем есть ли необхадимая БД, если нет создаем

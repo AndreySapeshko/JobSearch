@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 import psycopg2
 import pytest
 from dotenv import load_dotenv
+from psycopg2.sql import Composed, SQL, Identifier
 
 from src.db_manager import DBManager
 from src.vacancy import Vacancy
@@ -39,7 +40,7 @@ class TestDatabaseMethods(unittest.TestCase):
         mock_cursor.fetchall.return_value = mock_rows
         db_manager = DBManager()
         result = db_manager.get_data_from_table(mock_cursor, 'test_table')
-        mock_cursor.execute.assert_called_once_with('SELECT * FROM test_table')
+        mock_cursor.execute.assert_called_once_with(Composed([SQL('SELECT * FROM '), Identifier('test_table')]))
 
         self.assertEqual(result, mock_rows)
         self.assertIsInstance(result, list)
@@ -161,7 +162,7 @@ def test_add_if_new(incoming_element: dict, expected: int) -> None:
     conn.close()
 
 
-def test_update_database(json_page_from_hh: dict, short_json_page_from_hh) -> None:
+def test_update_database(json_page_from_hh: list, short_json_page_from_hh: list) -> None:
     db_manager = DBManager()
     db_manager.database = 'test_hh_vacancies'
     db_manager.update_database(short_json_page_from_hh)
