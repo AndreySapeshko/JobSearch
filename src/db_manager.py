@@ -5,8 +5,10 @@ import psycopg2
 from dotenv import load_dotenv
 from psycopg2 import OperationalError
 from psycopg2.extensions import cursor as Cursor
+from psycopg2 import sql
 
-from src.vacancy import Vacancy
+from src.hh_reader_vacancies import HhReaderVacancies
+from tests.test_vacancy_handler import hh_reader
 
 
 class DBManager:
@@ -38,8 +40,10 @@ class DBManager:
 
         data = []
         try:
-            queri = f'SELECT * FROM {table_name}'
-            cursor.execute(queri)
+            query = sql.SQL("SELECT * FROM {}").format(
+                sql.Identifier(table_name)
+            )
+            cursor.execute(query)
             rows = cursor.fetchall()
             for row in rows:
                 data.append(row)
@@ -172,7 +176,7 @@ class DBManager:
             saved_data.append(tuple(new_element))
         return id_arg
 
-    def update_database(self, vacancies: list[Vacancy]) -> None:
+    def update_database(self, data_from_hh: dict) -> None:
         """ Получает список вакансий, провереяет есть ли такие в БД и записывает новые """
 
         # Проверяем есть ли необхадимая БД, если нет создаем
@@ -186,44 +190,50 @@ class DBManager:
                 saved_employers = self.get_data_from_table(cur, 'employers')
                 saved_salary = self.get_data_from_table(cur, 'salary')
                 saved_vacancies = self.get_data_from_table(cur, 'vacancies')
-                for vacancy in vacancies:
-                    # Подготавливаем данные из полученных вакансий для таблиц salary и employers в БД
-                    table_salary = {
-                        'avg_salary': vacancy.salary,
-                        'range_salary': vacancy.salary_range[:40]
-                    }
-                    table_employers = {
-                        'name_employer': vacancy.employer[:150],
-                        'hh_id_employer': vacancy.employer_id[:15]
-                    }
-                    # Проверяем есть ли такая запись в таблице salary, если нет записываем и добавляем в список
-                    id_salary = self.add_if_new(cur, table_salary, saved_salary, 'salary', 'id_salary')
+                hh_reader = HhReaderVacancies(20)
+                for page in data_from_hh:
+                    for hh_vacancy in page.get('items'):
+                        vacancy = hh_reader.create_vacancy_from_hh(hh_vacancy)
+                        # Подготавливаем данные из полученных вакансий для таблиц salary и employers в БД
+                        table_salary = {
+                            'avg_salary': vacancy.salary,
+                            'range_salary': vacancy.salary_range[:40]
+                        }
+                        table_employers = {
+                            'name_employer': vacancy.employer[:150],
+                            'hh_id_employer': vacancy.employer_id[:15]
+                        }
+                        # Проверяем есть ли такая запись в таблице salary, если нет записываем и добавляем в список
+                        id_salary = self.add_if_new(cur, table_salary, saved_salary, 'salary', 'id_salary')
 
-                    # Проверяем есть ли такая запись в таблице employers, если нет записываем и добавляем в список
-                    id_employer = self.add_if_new(cur, table_employers, saved_employers, 'employers', 'id_employer')
+                        # Проверяем есть ли такая запись в таблице employers, если нет записываем и добавляем в список
+                        id_employer = self.add_if_new(cur, table_employers, saved_employers, 'employers', 'id_employer')
 
-                    # Подготавливаем данные из полученных вакансий для таблиц vacancies в БД
-                    table_vacancies = {
-                        'hh_id_vacancy': vacancy.id[:20],
-                        'name_vacancy': vacancy.name[:150],
-                        'id_salary': id_salary,
-                        'id_employer': id_employer,
-                        'description': vacancy.description[:1000],
-                        'requirement': vacancy.requirement[:1000],
-                        'url': vacancy.url[:50]
-                    }
+                        # Подготавливаем данные из полученных вакансий для таблиц vacancies в БД
+                        table_vacancies = {
+                            'hh_id_vacancy': vacancy.id[:20],
+                            'name_vacancy': vacancy.name[:150],
+                            'id_salary': id_salary,
+                            'id_employer': id_employer,
+                            'description': vacancy.description[:1000],
+                            'requirement': vacancy.requirement[:1000],
+                            'url': vacancy.url[:50]
+                        }
 
-                    # Проверяем есть ли такая запись в таблице vacancies, если нет записываем и добавляем в список
-                    self.add_if_new(cur, table_vacancies, saved_vacancies, 'vacancies', 'id_vacancy')
+                        # Проверяем есть ли такая запись в таблице vacancies, если нет записываем и добавляем в список
+                        self.add_if_new(cur, table_vacancies, saved_vacancies, 'vacancies', 'id_vacancy')
 
-    def get_data_on_request(self, request: str) -> list:
+    def get_data_on_request(self, request: str, values: Any = None) -> list:
         """ Получает данные из БД по переданному запросу """
         rows = []
         try:
             with psycopg2.connect(host=self.host, database=self.database,
                                   user=self.user, password=self.password) as conn:
                 with conn.cursor() as cur:
-                    cur.execute(request)
+                    if values:
+                        cur.execute(request, values)
+                    else:
+                        cur.execute(request)
                     rows = cur.fetchall()
 
         except Exception as e:
@@ -282,9 +292,9 @@ class DBManager:
             'FROM vacancies\n'
             'INNER JOIN employers USING (id_employer)\n'
             'INNER JOIN salary USING (id_salary)\n'
-            f'WHERE salary.avg_salary > {avg_salary}'
+            'WHERE salary.avg_salary > %s'
         )
-        data = self.get_data_on_request(request)
+        data = self.get_data_on_request(request, values=(avg_salary,))
         return data
 
     def get_vacancies_with_keyword(self, key_word: str) -> list:
@@ -296,7 +306,8 @@ class DBManager:
             "FROM vacancies\n"
             "INNER JOIN employers USING (id_employer)\n"
             "INNER JOIN salary USING (id_salary)\n"
-            f"WHERE vacancies.name_vacancy ILIKE '%{key_word}%'"
+            "WHERE vacancies.name_vacancy ILIKE %s"
         )
-        data = self.get_data_on_request(request)
+        search_pattern = ('%' + key_word + '%',)
+        data = self.get_data_on_request(request, search_pattern)
         return data

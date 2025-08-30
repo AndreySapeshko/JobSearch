@@ -161,21 +161,21 @@ def test_add_if_new(incoming_element: dict, expected: int) -> None:
     conn.close()
 
 
-def test_update_database(vacancies: list, vacancy_new: Vacancy) -> None:
+def test_update_database(json_page_from_hh: dict, short_json_page_from_hh) -> None:
     db_manager = DBManager()
     db_manager.database = 'test_hh_vacancies'
-    db_manager.update_database(vacancies)
+    db_manager.update_database(short_json_page_from_hh)
     with psycopg2.connect(host=db_manager.host, database=db_manager.database,
                           user=db_manager.user, password=db_manager.password) as conn:
         with conn.cursor() as cur:
             saved_vacancies = db_manager.get_data_from_table(cur, 'vacancies')
-            assert len(saved_vacancies) == 3
-            vacancies.append(vacancy_new)
-            db_manager.update_database(vacancies)
+            assert len(saved_vacancies) == 98
+            db_manager.update_database(short_json_page_from_hh)
             saved_vacancies = db_manager.get_data_from_table(cur, 'vacancies')
-            assert len(saved_vacancies) == 4
+            assert len(saved_vacancies) == 98
+            db_manager.update_database(json_page_from_hh)
             saved_vacancies = db_manager.get_data_from_table(cur, 'vacancies')
-            assert len(saved_vacancies) == 4
+            assert len(saved_vacancies) == 100
 
     conn = psycopg2.connect(host=db_manager.host, database='postgres',
                             user=db_manager.user, password=db_manager.password)
@@ -239,7 +239,7 @@ def test_get_vacancies_with_higher_salary() -> None:
 
 def test_get_vacancies_with_keyword() -> None:
     db_manager = DBManager()
-    result = db_manager.get_vacancies_with_keyword('python')
+    result = db_manager.get_vacancies_with_keyword('middle')
     if len(result) == 0:
         assert len(result) == 0
     else:

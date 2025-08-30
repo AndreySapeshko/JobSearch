@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -102,3 +103,16 @@ def saved_data() -> list:
         (2, 'name', 'salary', 'employer'),
         (3, 'n', 's', 'e')
     ]
+
+@pytest.fixture
+def json_page_from_hh() -> dict:
+    jason_handler = JsonFileHandler()
+    path_file_name = Path(__file__).parent.parent / 'data' / 'test_hh_page.json'
+    return jason_handler.read_from_file(path_file_name)
+
+
+@pytest.fixture
+def short_json_page_from_hh() -> dict:
+    jason_handler = JsonFileHandler()
+    path_file_name = Path(__file__).parent.parent / 'data' / 'shortened_test_hh_page.json'
+    return jason_handler.read_from_file(path_file_name)
